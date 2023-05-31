@@ -23,24 +23,32 @@ public class ImFriendShipEntity {
 
     @TableField(value = "to_id")
     private String toId;
-    /** 备注*/
     private String remark;
-    /** 状态 1正常 2删除*/
+    /**
+     * 1: normal, 2: deleted
+     */
     private Integer status;
-    /** 状态 1正常 2拉黑*/
+    /**
+     * 1: normal, 2: black out
+     */
     private Integer black;
-//    @TableField(updateStrategy = FieldStrategy.IGNORED)
+
     private Long createTime;
-    /** 好友关系序列号*/
-//    @TableField(updateStrategy = FieldStrategy.IGNORED)
+
+    /**
+     * Sequence of friendship
+     */
     private Long friendSequence;
 
-    /** 黑名单关系序列号*/
+    /**
+     * Sequence of blacklist relationship
+     */
     private Long blackSequence;
-    /** 好友来源*/
-//    @TableField(updateStrategy = FieldStrategy.IGNORED)
+
+    /**
+     * Resource of friend
+     */
     private String addSource;
 
     private String extra;
-
 }
