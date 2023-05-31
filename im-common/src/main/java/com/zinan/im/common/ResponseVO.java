@@ -1,6 +1,6 @@
 package com.zinan.im.common;
 
-import com.zinan.im.common.exception.ApplicationExceptionsInterface;
+import com.zinan.im.common.exception.ApplicationExceptionsStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,11 +24,11 @@ public class ResponseVO<T> {
     private T data;
 
     public static ResponseVO<?> successResponse(Object data) {
-        return new ResponseVO<>(200, "success", data);
+        return new ResponseVO<>(BaseErrorCode.SUCCESS.getCode(), BaseErrorCode.SUCCESS.getError(), data);
     }
 
     public static ResponseVO<?> successResponse() {
-        return new ResponseVO<>(200, "success");
+        return new ResponseVO<>(BaseErrorCode.SUCCESS.getCode(), BaseErrorCode.SUCCESS.getError());
     }
 
     public static ResponseVO<?> errorResponse() {
@@ -39,12 +39,12 @@ public class ResponseVO<T> {
         return new ResponseVO<>(code, msg);
     }
 
-    public static ResponseVO<?> errorResponse(ApplicationExceptionsInterface enums) {
+    public static ResponseVO<?> errorResponse(ApplicationExceptionsStrategy enums) {
         return new ResponseVO<>(enums.getCode(), enums.getError());
     }
 
     public boolean isOk() {
-        return this.code == 200;
+        return this.code != 200;
     }
 
     public ResponseVO(int code, String msg) {

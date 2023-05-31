@@ -1,4 +1,4 @@
-package com.zinan.im.service.user.exception;
+package com.zinan.im.service.exception;
 
 import com.zinan.im.common.BaseErrorCode;
 import com.zinan.im.common.ResponseVO;
@@ -32,10 +32,8 @@ public class GlobalExceptionHandler {
         ResponseVO<?> resultBean = new ResponseVO<>();
         resultBean.setCode(BaseErrorCode.SYSTEM_ERROR.getCode());
         resultBean.setMsg(BaseErrorCode.SYSTEM_ERROR.getError());
+        // Do the logic of unknown exception, for example, send an email or mobile message
 
-        /**
-         * Do the logic of unknown exception, for example, send an email or mobile message
-         */
         return resultBean;
     }
 
@@ -92,7 +90,7 @@ public class GlobalExceptionHandler {
         FieldError err = ex.getFieldError();
         String message = "";
         if (err != null) {
-            message = "参数{".concat(err.getField()).concat("}").concat(err.getDefaultMessage());
+            message = "参数{".concat(err.getField()).concat("}").concat(err.getDefaultMessage() == null ? "" : err.getDefaultMessage());
         }
         ResponseVO<?> resultBean = new ResponseVO<>();
         resultBean.setCode(BaseErrorCode.PARAMETER_ERROR.getCode());

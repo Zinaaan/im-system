@@ -4,6 +4,7 @@ import com.zinan.im.common.model.RequestBase;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -15,5 +16,6 @@ import java.util.List;
 public class DeleteUserReq extends RequestBase {
 
     @NotEmpty(message = "The userId can not be null")
+    @Size(min = 1, message = "At least one user is required")
     private List<String> userId;
 }

@@ -1,9 +1,7 @@
 package com.zinan.im.service.user.service;
 
 import com.zinan.im.common.ResponseVO;
-import com.zinan.im.service.user.dao.ImUserDataEntity;
 import com.zinan.im.service.user.model.req.*;
-import com.zinan.im.service.user.model.resq.GetUserInfoResp;
 
 /**
  * @author lzn
@@ -14,9 +12,9 @@ public interface ImUserService {
 
     ResponseVO<?> importUser(ImportUserReq importUserReq);
 
-    ResponseVO<GetUserInfoResp> getUserInfo(GetUserInfoReq req);
+    ResponseVO<?> getUserInfo(GetUserInfoReq req);
 
-    ResponseVO<ImUserDataEntity> getSingleUserInfo(String userId, Integer appId);
+    ResponseVO<?> getSingleUserInfo(UserId req);
 
     ResponseVO<?> deleteUser(DeleteUserReq req);
 

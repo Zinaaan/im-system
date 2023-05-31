@@ -12,42 +12,46 @@ import lombok.Data;
 @TableName("im_user_data")
 public class ImUserDataEntity {
 
-    // 用户id
     private String userId;
 
-    // 用户名称
     private String nickName;
 
-    //位置
     private String location;
 
-    //生日
     private String birthDay;
 
     private String password;
 
-    // 头像
     private String photo;
 
-    // 性别
     private Integer userSex;
 
-    // 个性签名
     private String selfSignature;
 
-    // 加好友验证类型（Friend_AllowType） 1需要验证
+    /**
+     * Whether verification required for adding friends, 1: required, 2: non-required
+     * 加好友验证类型（Friend_AllowType） 1需要验证
+     */
     private Integer friendAllowType;
 
-    // 管理员禁止用户添加加好友：0 未禁用 1 已禁用
+    /**
+     * Adding friends, 0: allowed, 1: disabled
+     * 管理员禁止用户添加加好友：0 未禁用 1 已禁用
+     */
     private Integer disableAddFriend;
 
-    // 禁用标识(0 未禁用 1 已禁用)
+    /**
+     * Forbidden sign, 0: allowed,  1: disabled
+     * 禁用标识(0 未禁用 1 已禁用)
+     */
     private Integer forbiddenFlag;
 
-    // 禁言标识
+    /**
+     * Ban sign (禁言标识)
+     */
     private Integer silentFlag;
     /**
-     * 用户类型 1普通用户 2客服 3机器人
+     * Use type, 1: normal user, 2: customer service, 3: robot
      */
     private Integer userType;
 

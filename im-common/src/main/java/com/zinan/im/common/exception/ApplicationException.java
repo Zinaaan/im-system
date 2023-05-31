@@ -17,7 +17,7 @@ public class ApplicationException extends RuntimeException {
         this.error = error;
     }
 
-    public ApplicationException(ApplicationExceptionsInterface exceptionsInterface) {
+    public ApplicationException(ApplicationExceptionsStrategy exceptionsInterface) {
         super(exceptionsInterface.getError());
         this.code = exceptionsInterface.getCode();
         this.error = exceptionsInterface.getError();
