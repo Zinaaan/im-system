@@ -10,7 +10,7 @@ import com.zinan.im.service.friendship.model.req.UpdateFriendReq;
  * @date 2023/05/31 19:03
  * @description
  */
-public interface ImFriendService {
+public interface ImFriendshipService {
 
     ResponseVO<?> importFriendShip(ImportFriendShipReq req);
 

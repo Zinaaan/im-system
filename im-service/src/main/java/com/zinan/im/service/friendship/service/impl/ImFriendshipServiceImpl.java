@@ -12,7 +12,7 @@ import com.zinan.im.service.friendship.model.req.FriendDto;
 import com.zinan.im.service.friendship.model.req.ImportFriendShipReq;
 import com.zinan.im.service.friendship.model.req.UpdateFriendReq;
 import com.zinan.im.service.friendship.model.resp.ImportFriendShipResp;
-import com.zinan.im.service.friendship.service.ImFriendService;
+import com.zinan.im.service.friendship.service.ImFriendshipService;
 import com.zinan.im.service.user.model.req.UserId;
 import com.zinan.im.service.user.service.ImUserService;
 import org.apache.commons.lang3.StringUtils;
@@ -29,13 +29,13 @@ import java.util.List;
  * @description
  */
 @Service
-public class ImFriendServiceImpl implements ImFriendService {
+public class ImFriendshipServiceImpl implements ImFriendshipService {
 
     private final ImFriendShipMapper imFriendShipMapper;
 
     private final ImUserService imUserService;
 
-    public ImFriendServiceImpl(ImFriendShipMapper imFriendShipMapper, ImUserService imUserService) {
+    public ImFriendshipServiceImpl(ImFriendShipMapper imFriendShipMapper, ImUserService imUserService) {
         this.imFriendShipMapper = imFriendShipMapper;
         this.imUserService = imUserService;
     }
@@ -67,7 +67,6 @@ public class ImFriendServiceImpl implements ImFriendService {
                 e.printStackTrace();
                 errorId.add(dto.getToId());
             }
-
         }
 
         resp.setErrorId(errorId);
@@ -136,27 +135,24 @@ public class ImFriendServiceImpl implements ImFriendService {
                 return ResponseVO.errorResponse(FriendShipErrorCode.TO_IS_NOT_YOUR_FRIEND);
             }
 
-            // The status of your relationship is deleted, add necessary information and change status to added
-            if (fromItem.getStatus() == FriendShipStatusEnum.FRIEND_STATUS_DELETE.getCode()) {
-                ImFriendShipEntity update = new ImFriendShipEntity();
-                if (StringUtils.isNoneBlank(dto.getAddSource())) {
-                    update.setAddSource(dto.getAddSource());
-                }
-                if (StringUtils.isNoneBlank(dto.getRemark())) {
-                    update.setRemark(dto.getRemark());
-                }
-                if (StringUtils.isNoneBlank(dto.getExtra())) {
-                    update.setExtra(dto.getExtra());
-                }
+            // The status of your relationship is not normal, add necessary information and change status to "added"
+            ImFriendShipEntity update = new ImFriendShipEntity();
+            if (StringUtils.isNoneBlank(dto.getAddSource())) {
+                update.setAddSource(dto.getAddSource());
+            }
+            if (StringUtils.isNoneBlank(dto.getRemark())) {
+                update.setRemark(dto.getRemark());
+            }
+            if (StringUtils.isNoneBlank(dto.getExtra())) {
+                update.setExtra(dto.getExtra());
+            }
 
-                // Set the status to added
-                update.setStatus(FriendShipStatusEnum.FRIEND_STATUS_NORMAL.getCode());
+            // Set the status to added
+            update.setStatus(FriendShipStatusEnum.FRIEND_STATUS_NORMAL.getCode());
 
-                int updateRs = imFriendShipMapper.update(update, addWrapper);
-                if (updateRs != 1) {
-                    return ResponseVO.errorResponse(FriendShipErrorCode.ADD_FRIEND_ERROR);
-                }
-
+            int updateRs = imFriendShipMapper.update(update, addWrapper);
+            if (updateRs != 1) {
+                return ResponseVO.errorResponse(FriendShipErrorCode.ADD_FRIEND_ERROR);
             }
         }
 
@@ -171,7 +167,8 @@ public class ImFriendServiceImpl implements ImFriendService {
                 .set(ImFriendShipEntity::getRemark, dto.getRemark())
                 .set(ImFriendShipEntity::getExtra, dto.getExtra())
                 .eq(ImFriendShipEntity::getAppId, appId)
-                .eq(ImFriendShipEntity::getFromId, fromId);
+                .eq(ImFriendShipEntity::getFromId, fromId)
+                .eq(ImFriendShipEntity::getToId, dto.getToId());
 
         imFriendShipMapper.update(null, updateWrapper);
 

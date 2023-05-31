@@ -2,8 +2,7 @@ package com.zinan.im.service.friendship.controller;
 
 import com.zinan.im.common.ResponseVO;
 import com.zinan.im.service.friendship.model.req.*;
-import com.zinan.im.service.friendship.service.ImFriendService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.zinan.im.service.friendship.service.ImFriendshipService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/friendship")
 public class ImFriendShipController {
 
-    private final ImFriendService imFriendShipService;
+    private final ImFriendshipService imFriendShipService;
 
-    public ImFriendShipController(ImFriendService imFriendShipService) {
+    public ImFriendShipController(ImFriendshipService imFriendShipService) {
         this.imFriendShipService = imFriendShipService;
     }
 
