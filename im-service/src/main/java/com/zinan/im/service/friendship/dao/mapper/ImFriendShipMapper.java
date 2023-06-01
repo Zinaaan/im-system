@@ -6,6 +6,7 @@ import com.zinan.im.service.friendship.model.req.CheckFriendShipReq;
 import com.zinan.im.service.friendship.model.resp.CheckFriendShipResp;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * @description
  */
 @Mapper
+@Repository
 public interface ImFriendShipMapper extends BaseMapper<ImFriendShipEntity> {
 
 

@@ -7,10 +7,7 @@ import com.zinan.im.common.enums.FriendShipErrorCode;
 import com.zinan.im.common.enums.FriendShipStatusEnum;
 import com.zinan.im.service.friendship.dao.ImFriendShipEntity;
 import com.zinan.im.service.friendship.dao.mapper.ImFriendShipMapper;
-import com.zinan.im.service.friendship.model.req.AddFriendReq;
-import com.zinan.im.service.friendship.model.req.FriendDto;
-import com.zinan.im.service.friendship.model.req.ImportFriendShipReq;
-import com.zinan.im.service.friendship.model.req.UpdateFriendReq;
+import com.zinan.im.service.friendship.model.req.*;
 import com.zinan.im.service.friendship.model.resp.ImportFriendShipResp;
 import com.zinan.im.service.friendship.service.ImFriendshipService;
 import com.zinan.im.service.user.model.req.UserId;
@@ -77,35 +74,80 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
 
     @Override
     public ResponseVO<?> addFriend(AddFriendReq req) {
+        UserId userId = new UserId();
+        userId.setUserId(req.getFromId());
+        userId.setAppId(req.getAppId());
 
-        ResponseVO<?> fromInfo = imUserService.getSingleUserInfo(new UserId(req.getFromId()));
+        ResponseVO<?> fromInfo = imUserService.getSingleUserInfo(userId);
         if (fromInfo.isOk()) {
             return fromInfo;
         }
 
-        ResponseVO<?> toInfo = imUserService.getSingleUserInfo(new UserId(req.getToItem().getToId()));
+        ResponseVO<?> toInfo = imUserService.getSingleUserInfo(userId);
         if (toInfo.isOk()) {
             return toInfo;
         }
-
 
         return doAddFriend(req.getFromId(), req.getToItem(), req.getAppId());
     }
 
     @Override
     public ResponseVO<?> updateFriend(UpdateFriendReq req) {
+        UserId userId = new UserId();
+        userId.setUserId(req.getFromId());
+        userId.setAppId(req.getAppId());
 
-        ResponseVO<?> fromInfo = imUserService.getSingleUserInfo(new UserId(req.getFromId()));
+        ResponseVO<?> fromInfo = imUserService.getSingleUserInfo(userId);
         if (fromInfo.isOk()) {
             return fromInfo;
         }
 
-        ResponseVO<?> toInfo = imUserService.getSingleUserInfo(new UserId(req.getToItem().getToId()));
+        ResponseVO<?> toInfo = imUserService.getSingleUserInfo(userId);
         if (toInfo.isOk()) {
             return toInfo;
         }
 
         return doUpdateFriend(req.getFromId(), req.getToItem(), req.getAppId());
+    }
+
+    @Override
+    public ResponseVO<?> deleteFriend(DeleteFriendReq req) {
+
+        QueryWrapper<ImFriendShipEntity> deleteWrapper = new QueryWrapper<>();
+        deleteWrapper.eq("app_id", req.getAppId());
+        deleteWrapper.eq("from_id", req.getFromId());
+        deleteWrapper.eq("to_id", req.getToId());
+
+        // Checking if the current record exists
+        ImFriendShipEntity fromItem = imFriendShipMapper.selectOne(deleteWrapper);
+        if (fromItem == null) {
+            return ResponseVO.errorResponse(FriendShipErrorCode.TO_IS_NOT_YOUR_FRIEND);
+        }
+
+        if (fromItem.getStatus() != FriendShipStatusEnum.FRIEND_STATUS_NORMAL.getCode()) {
+            // The friend has already been deleted
+            return ResponseVO.errorResponse(FriendShipErrorCode.FRIEND_IS_DELETED);
+        }
+
+        ImFriendShipEntity delete = new ImFriendShipEntity();
+        delete.setStatus(FriendShipStatusEnum.FRIEND_STATUS_DELETE.getCode());
+        imFriendShipMapper.update(delete, deleteWrapper);
+
+        return ResponseVO.successResponse();
+    }
+
+    @Override
+    public ResponseVO<?> deleteAllFriend(DeleteFriendReq req) {
+        QueryWrapper<ImFriendShipEntity> deleteAllWrapper = new QueryWrapper<>();
+        deleteAllWrapper.eq("app_id", req.getAppId());
+        deleteAllWrapper.eq("from_id", req.getFromId());
+        deleteAllWrapper.eq("status", FriendShipStatusEnum.FRIEND_STATUS_NORMAL.getCode());
+
+        ImFriendShipEntity deleteAll = new ImFriendShipEntity();
+        deleteAll.setStatus(FriendShipStatusEnum.FRIEND_STATUS_DELETE.getCode());
+        imFriendShipMapper.update(deleteAll, deleteAllWrapper);
+
+        return ResponseVO.successResponse();
     }
 
     @Transactional(rollbackFor = Exception.class)

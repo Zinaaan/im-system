@@ -44,7 +44,7 @@ public class ResponseVO<T> {
     }
 
     public boolean isOk() {
-        return this.code != 200;
+        return this.code == 200;
     }
 
     public ResponseVO(int code, String msg) {

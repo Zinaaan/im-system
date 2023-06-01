@@ -24,31 +24,29 @@ public class ImFriendShipController {
     }
 
     @RequestMapping("/importFriendShip")
-    public ResponseVO<?> importFriendShip(@RequestBody @Validated ImportFriendShipReq req){
+    public ResponseVO<?> importFriendShip(@RequestBody @Validated ImportFriendShipReq req) {
         return imFriendShipService.importFriendShip(req);
     }
 
     @RequestMapping("/addFriend")
-    public ResponseVO<?> addFriend(@RequestBody @Validated AddFriendReq req){
+    public ResponseVO<?> addFriend(@RequestBody @Validated AddFriendReq req) {
         return imFriendShipService.addFriend(req);
     }
 
     @RequestMapping("/updateFriend")
-    public ResponseVO<?> updateFriend(@RequestBody @Validated UpdateFriendReq req){
+    public ResponseVO<?> updateFriend(@RequestBody @Validated UpdateFriendReq req) {
         return imFriendShipService.updateFriend(req);
     }
-//
-//    @RequestMapping("/deleteFriend")
-//    public ResponseVO<?> deleteFriend(@RequestBody @Validated DeleteFriendReq req, Integer appId){
-//        req.setAppId(appId);
-//        return imFriendShipService.deleteFriend(req);
-//    }
-//
-//    @RequestMapping("/deleteAllFriend")
-//    public ResponseVO<?> deleteAllFriend(@RequestBody @Validated DeleteFriendReq req, Integer appId){
-//        req.setAppId(appId);
-//        return imFriendShipService.deleteAllFriend(req);
-//    }
+
+    @RequestMapping("/deleteFriend")
+    public ResponseVO<?> deleteFriend(@RequestBody @Validated DeleteFriendReq req) {
+        return imFriendShipService.deleteFriend(req);
+    }
+
+    @RequestMapping("/deleteAllFriend")
+    public ResponseVO<?> deleteAllFriend(@RequestBody @Validated DeleteFriendReq req) {
+        return imFriendShipService.deleteAllFriend(req);
+    }
 //
 //    @RequestMapping("/getAllFriendShip")
 //    public ResponseVO<?> getAllFriendShip(@RequestBody @Validated GetAllFriendShipReq req, Integer appId){

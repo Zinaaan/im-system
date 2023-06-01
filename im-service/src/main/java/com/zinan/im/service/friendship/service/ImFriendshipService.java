@@ -2,6 +2,7 @@ package com.zinan.im.service.friendship.service;
 
 import com.zinan.im.common.ResponseVO;
 import com.zinan.im.service.friendship.model.req.AddFriendReq;
+import com.zinan.im.service.friendship.model.req.DeleteFriendReq;
 import com.zinan.im.service.friendship.model.req.ImportFriendShipReq;
 import com.zinan.im.service.friendship.model.req.UpdateFriendReq;
 
@@ -17,4 +18,8 @@ public interface ImFriendshipService {
     ResponseVO<?> addFriend(AddFriendReq req);
 
     ResponseVO<?> updateFriend(UpdateFriendReq req);
+
+    ResponseVO<?> deleteFriend(DeleteFriendReq req);
+
+    ResponseVO<?> deleteAllFriend(DeleteFriendReq req);
 }

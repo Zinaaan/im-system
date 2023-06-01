@@ -3,6 +3,7 @@ package com.zinan.im.service.user.model.req;
 import com.zinan.im.common.model.RequestBase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserId extends RequestBase {
 
     @NotNull(message = "The userId can not be null")
