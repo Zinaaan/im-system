@@ -150,6 +150,33 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
         return ResponseVO.successResponse();
     }
 
+    @Override
+    public ResponseVO<?> getFriendRelationship(GetRelationReq req) {
+
+        QueryWrapper<ImFriendShipEntity> friendWrapper = new QueryWrapper<>();
+        friendWrapper.eq("app_id", req.getAppId());
+        friendWrapper.eq("from_id", req.getFromId());
+        friendWrapper.eq("to_id", req.getToId());
+
+        ImFriendShipEntity friendEntity = imFriendShipMapper.selectOne(friendWrapper);
+        if(friendEntity == null){
+            return ResponseVO.errorResponse(FriendShipErrorCode.RELATIONSHIP_IS_NOT_EXIST);
+        }
+
+        return ResponseVO.successResponse(friendEntity);
+    }
+
+    @Override
+    public ResponseVO<?> getAllFriendRelationship(GetAllFriendShipReq req) {
+
+        QueryWrapper<ImFriendShipEntity> allFriendWrapper = new QueryWrapper<>();
+        allFriendWrapper.eq("app_id", req.getAppId());
+        allFriendWrapper.eq("from_id", req.getFromId());
+
+        return ResponseVO.successResponse(imFriendShipMapper.selectList(allFriendWrapper));
+    }
+
+
     @Transactional(rollbackFor = Exception.class)
     public ResponseVO<?> doAddFriend(String fromId, FriendDto dto, Integer appId) {
         // A-B

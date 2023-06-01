@@ -47,18 +47,16 @@ public class ImFriendShipController {
     public ResponseVO<?> deleteAllFriend(@RequestBody @Validated DeleteFriendReq req) {
         return imFriendShipService.deleteAllFriend(req);
     }
-//
-//    @RequestMapping("/getAllFriendShip")
-//    public ResponseVO<?> getAllFriendShip(@RequestBody @Validated GetAllFriendShipReq req, Integer appId){
-//        req.setAppId(appId);
-//        return imFriendShipService.getAllFriendShip(req);
-//    }
-//
-//    @RequestMapping("/getRelation")
-//    public ResponseVO<?> getRelation(@RequestBody @Validated GetRelationReq req, Integer appId){
-//        req.setAppId(appId);
-//        return imFriendShipService.getRelation(req);
-//    }
+
+    @RequestMapping("/getAllFriendRelationship")
+    public ResponseVO<?> getAllFriendShip(@RequestBody @Validated GetAllFriendShipReq req){
+        return imFriendShipService.getAllFriendRelationship(req);
+    }
+
+    @RequestMapping("/getFriendRelationship")
+    public ResponseVO<?> getRelation(@RequestBody @Validated GetRelationReq req){
+        return imFriendShipService.getFriendRelationship(req);
+    }
 //
 //    @RequestMapping("/checkFriend")
 //    public ResponseVO<?> checkFriend(@RequestBody @Validated CheckFriendShipReq req, Integer appId){
