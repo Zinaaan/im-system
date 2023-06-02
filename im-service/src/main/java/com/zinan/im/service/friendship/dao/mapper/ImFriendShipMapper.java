@@ -22,13 +22,12 @@ public interface ImFriendShipMapper extends BaseMapper<ImFriendShipEntity> {
 
     @Select("<script>" +
             "select from_id as fromId , to_id as toId ,if(status = 1,1,0) as status from im_friendship where from_id = #{fromId} and to_id in " +
-            "<foreach collection='toIds' index='index' item='id' separator=',' close = ')' open='(' > " +
+            "<foreach collection='toIds' index='index' item='id' separator=',' close = ')' open='(' >" +
             "#{id}" +
             "</foreach>" +
             " and app_id = #{appId} " +
             "</script>")
     List<CheckFriendShipResp> checkFriendShip(CheckFriendShipReq req);
-
 
     @Select("<script>" +
             " select a.fromId,a.toId , ( \n" +

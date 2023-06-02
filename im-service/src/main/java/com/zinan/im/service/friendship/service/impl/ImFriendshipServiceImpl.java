@@ -3,11 +3,13 @@ package com.zinan.im.service.friendship.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zinan.im.common.ResponseVO;
+import com.zinan.im.common.enums.CheckFriendShipTypeEnum;
 import com.zinan.im.common.enums.FriendShipErrorCode;
 import com.zinan.im.common.enums.FriendShipStatusEnum;
 import com.zinan.im.service.friendship.dao.ImFriendShipEntity;
 import com.zinan.im.service.friendship.dao.mapper.ImFriendShipMapper;
 import com.zinan.im.service.friendship.model.req.*;
+import com.zinan.im.service.friendship.model.resp.CheckFriendShipResp;
 import com.zinan.im.service.friendship.model.resp.ImportFriendShipResp;
 import com.zinan.im.service.friendship.service.ImFriendshipService;
 import com.zinan.im.service.user.model.req.UserId;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author lzn
@@ -78,13 +81,15 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
         userId.setUserId(req.getFromId());
         userId.setAppId(req.getAppId());
 
+        // Return directly if the current user does not exist
         ResponseVO<?> fromInfo = imUserService.getSingleUserInfo(userId);
-        if (fromInfo.isOk()) {
+        if (!fromInfo.isOk()) {
             return fromInfo;
         }
 
+        // Return directly if the friend does not exist
         ResponseVO<?> toInfo = imUserService.getSingleUserInfo(userId);
-        if (toInfo.isOk()) {
+        if (!toInfo.isOk()) {
             return toInfo;
         }
 
@@ -97,13 +102,15 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
         userId.setUserId(req.getFromId());
         userId.setAppId(req.getAppId());
 
+        // Return directly if the current user does not exist
         ResponseVO<?> fromInfo = imUserService.getSingleUserInfo(userId);
-        if (fromInfo.isOk()) {
+        if (!fromInfo.isOk()) {
             return fromInfo;
         }
 
+        // Return directly if the friend does not exist
         ResponseVO<?> toInfo = imUserService.getSingleUserInfo(userId);
-        if (toInfo.isOk()) {
+        if (!toInfo.isOk()) {
             return toInfo;
         }
 
@@ -151,7 +158,7 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
     }
 
     @Override
-    public ResponseVO<?> getFriendRelationship(GetRelationReq req) {
+    public ResponseVO<?> getFriendship(GetRelationReq req) {
 
         QueryWrapper<ImFriendShipEntity> friendWrapper = new QueryWrapper<>();
         friendWrapper.eq("app_id", req.getAppId());
@@ -159,7 +166,7 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
         friendWrapper.eq("to_id", req.getToId());
 
         ImFriendShipEntity friendEntity = imFriendShipMapper.selectOne(friendWrapper);
-        if(friendEntity == null){
+        if (friendEntity == null) {
             return ResponseVO.errorResponse(FriendShipErrorCode.RELATIONSHIP_IS_NOT_EXIST);
         }
 
@@ -167,7 +174,7 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
     }
 
     @Override
-    public ResponseVO<?> getAllFriendRelationship(GetAllFriendShipReq req) {
+    public ResponseVO<?> getAllFriendship(GetAllFriendShipReq req) {
 
         QueryWrapper<ImFriendShipEntity> allFriendWrapper = new QueryWrapper<>();
         allFriendWrapper.eq("app_id", req.getAppId());
@@ -176,6 +183,121 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
         return ResponseVO.successResponse(imFriendShipMapper.selectList(allFriendWrapper));
     }
 
+    @Override
+    public ResponseVO<?> checkFriendship(CheckFriendShipReq req) {
+
+        List<CheckFriendShipResp> respList;
+        // one-side verification
+        if (req.getCheckType() == CheckFriendShipTypeEnum.SINGLE.getType()) {
+            respList = imFriendShipMapper.checkFriendShip(req);
+        } else {
+            respList = imFriendShipMapper.checkFriendShipBoth(req);
+        }
+
+        // For those friends who don't have any relationship with current user should also return records (which status is '0')
+        List<CheckFriendShipResp> notPresentInDatabase = req.getToIds().stream()
+                .filter(toId -> respList.stream().noneMatch(resp -> resp.getToId().equals(toId)))
+                .map(toId -> new CheckFriendShipResp(req.getFromId(), toId, 0)).collect(Collectors.toList());
+        respList.addAll(notPresentInDatabase);
+
+        // two-side or none relationship verification
+        return ResponseVO.successResponse(respList);
+    }
+
+    @Override
+    public ResponseVO<?> addToBlackList(AddFriendShipBlackReq req) {
+
+        UserId userId = new UserId();
+        userId.setUserId(req.getFromId());
+        userId.setAppId(req.getAppId());
+
+        // Return directly if the current user does not exist
+        ResponseVO<?> fromInfo = imUserService.getSingleUserInfo(userId);
+        if (!fromInfo.isOk()) {
+            return fromInfo;
+        }
+
+        // Return directly if the friend does not exist
+        ResponseVO<?> toInfo = imUserService.getSingleUserInfo(userId);
+        if (!toInfo.isOk()) {
+            return toInfo;
+        }
+
+        QueryWrapper<ImFriendShipEntity> addWrapper = new QueryWrapper<>();
+        addWrapper.eq("app_id", req.getAppId());
+        addWrapper.eq("from_id", req.getFromId());
+        addWrapper.eq("to_id", req.getToId());
+
+        ImFriendShipEntity addEntity = imFriendShipMapper.selectOne(addWrapper);
+        if (addEntity == null) {
+            addEntity = new ImFriendShipEntity();
+            addEntity.setAppId(req.getAppId());
+            addEntity.setFromId(req.getFromId());
+            addEntity.setToId(req.getToId());
+            addEntity.setBlack(FriendShipStatusEnum.BLACK_STATUS_NORMAL.getCode());
+            addEntity.setCreateTime(System.currentTimeMillis());
+            int insert = imFriendShipMapper.insert(addEntity);
+            if(insert != 1){
+                return ResponseVO.errorResponse(FriendShipErrorCode.ADD_FRIEND_ERROR);
+            }
+        } else {
+            // Return directly if friend is already been blacked out
+            if(addEntity.getBlack() != null && addEntity.getBlack().equals(FriendShipStatusEnum.BLACK_STATUS_NORMAL.getCode())){
+                return ResponseVO.errorResponse(FriendShipErrorCode.FRIEND_IS_BLACK);
+            }
+
+            addEntity.setBlack(FriendShipStatusEnum.BLACK_STATUS_NORMAL.getCode());
+            int update = imFriendShipMapper.update(addEntity, addWrapper);
+            if(update != 1){
+                return ResponseVO.errorResponse(FriendShipErrorCode.ADD_FRIEND_ERROR);
+            }
+        }
+
+        return ResponseVO.successResponse();
+    }
+
+    @Override
+    public ResponseVO<?> deleteFromBlackList(DeleteBlackReq req) {
+
+        QueryWrapper<ImFriendShipEntity> deleteWrapper = new QueryWrapper<>();
+        deleteWrapper.eq("app_id", req.getAppId());
+        deleteWrapper.eq("from_id", req.getFromId());
+        deleteWrapper.eq("to_id", req.getToId());
+
+        // Checking if the current record exists
+        ImFriendShipEntity fromItem = imFriendShipMapper.selectOne(deleteWrapper);
+        if (fromItem == null) {
+            return ResponseVO.errorResponse(FriendShipErrorCode.FRIEND_IS_NOT_YOUR_BLACK);
+        }
+
+        // Set the black status to deleted
+        ImFriendShipEntity delete = new ImFriendShipEntity();
+        delete.setStatus(FriendShipStatusEnum.BLACK_STATUS_DELETE.getCode());
+        imFriendShipMapper.update(delete, deleteWrapper);
+
+        return ResponseVO.successResponse();
+    }
+
+    @Override
+    public ResponseVO<?> checkIfInBlackList(CheckFriendShipReq req) {
+
+        List<CheckFriendShipResp> respList;
+        // one-side verification
+        if (req.getCheckType() == CheckFriendShipTypeEnum.SINGLE.getType()) {
+            respList = imFriendShipMapper.checkFriendShipBlack(req);
+        } else {
+            respList = imFriendShipMapper.checkFriendShipBlackBoth(req);
+        }
+
+        // For those friends who are not in the blacklist for current user should also return records (which status is '0')
+        List<CheckFriendShipResp> notPresentInDatabase = req.getToIds().stream()
+                .filter(toId -> respList.stream().noneMatch(resp -> resp.getToId().equals(toId)))
+                .map(toId -> new CheckFriendShipResp(req.getFromId(), toId, 0)).collect(Collectors.toList());
+        respList.addAll(notPresentInDatabase);
+
+        // two-side or none relationship verification
+        return ResponseVO.successResponse(respList);
+    }
 
     @Transactional(rollbackFor = Exception.class)
     public ResponseVO<?> doAddFriend(String fromId, FriendDto dto, Integer appId) {

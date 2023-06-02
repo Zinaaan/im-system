@@ -21,7 +21,7 @@ public class CheckFriendShipReq extends RequestBase {
     private String fromId;
 
     @NotEmpty(message = "toIds can not be null")
-    @Size(min = 1, message = "At least one toId is required")
+    @Size(min = 1, message = "At least one friend id is required")
     private List<String> toIds;
 
     @NotNull(message = "checkType can not be null")

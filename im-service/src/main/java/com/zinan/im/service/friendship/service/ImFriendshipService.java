@@ -20,7 +20,15 @@ public interface ImFriendshipService {
 
     ResponseVO<?> deleteAllFriend(DeleteFriendReq req);
 
-    ResponseVO<?> getFriendRelationship(GetRelationReq req);
+    ResponseVO<?> getFriendship(GetRelationReq req);
 
-    ResponseVO<?> getAllFriendRelationship(GetAllFriendShipReq req);
+    ResponseVO<?> getAllFriendship(GetAllFriendShipReq req);
+
+    ResponseVO<?> checkFriendship(CheckFriendShipReq req);
+
+    ResponseVO<?> addToBlackList(AddFriendShipBlackReq req);
+
+    ResponseVO<?> deleteFromBlackList(DeleteBlackReq req);
+
+    ResponseVO<?> checkIfInBlackList(CheckFriendShipReq req);
 }

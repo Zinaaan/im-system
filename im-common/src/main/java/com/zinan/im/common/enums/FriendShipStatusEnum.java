@@ -17,11 +17,13 @@ public enum FriendShipStatusEnum {
     FRIEND_STATUS_DELETE(2),
 
     /**
-     * 0:Not added 1:Added 2:Deleted
+     * 0:Not added 1:Black out 2:Deleted
      */
+    BLACK_STATUS_NO_BLACKED(0),
+
     BLACK_STATUS_NORMAL(1),
 
-    BLACK_STATUS_BLACKED(2),
+    BLACK_STATUS_DELETE(2),
     ;
 
     private final int code;

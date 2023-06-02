@@ -16,5 +16,6 @@ public class AddFriendShipBlackReq extends RequestBase {
     @NotBlank(message = "fromId can not be null")
     private String fromId;
 
+    @NotBlank(message = "toId can not be null")
     private String toId;
 }

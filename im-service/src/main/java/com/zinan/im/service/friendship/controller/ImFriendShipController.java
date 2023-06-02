@@ -48,41 +48,36 @@ public class ImFriendShipController {
         return imFriendShipService.deleteAllFriend(req);
     }
 
-    @RequestMapping("/getAllFriendRelationship")
-    public ResponseVO<?> getAllFriendShip(@RequestBody @Validated GetAllFriendShipReq req){
-        return imFriendShipService.getAllFriendRelationship(req);
+    @RequestMapping("/getAllFriendship")
+    public ResponseVO<?> getAllFriendship(@RequestBody @Validated GetAllFriendShipReq req){
+        return imFriendShipService.getAllFriendship(req);
     }
 
-    @RequestMapping("/getFriendRelationship")
-    public ResponseVO<?> getRelation(@RequestBody @Validated GetRelationReq req){
-        return imFriendShipService.getFriendRelationship(req);
+    @RequestMapping("/getFriendship")
+    public ResponseVO<?> getFriendship(@RequestBody @Validated GetRelationReq req){
+        return imFriendShipService.getFriendship(req);
     }
-//
-//    @RequestMapping("/checkFriend")
-//    public ResponseVO<?> checkFriend(@RequestBody @Validated CheckFriendShipReq req, Integer appId){
-//        req.setAppId(appId);
-//        return imFriendShipService.checkFriendship(req);
-//    }
-//
-//    @RequestMapping("/addBlack")
-//    public ResponseVO<?> addBlack(@RequestBody @Validated AddFriendShipBlackReq req, Integer appId){
-//        req.setAppId(appId);
-//        return imFriendShipService.addBlack(req);
-//    }
-//
-//    @RequestMapping("/deleteBlack")
-//    public ResponseVO<?> deleteBlack(@RequestBody @Validated DeleteBlackReq req, Integer appId){
-//        req.setAppId(appId);
-//        return imFriendShipService.deleteBlack(req);
-//    }
-//
-//    @RequestMapping("/checkBlck")
-//    public ResponseVO<?> checkBlck(@RequestBody @Validated CheckFriendShipReq req, Integer appId){
-//        req.setAppId(appId);
-//        return imFriendShipService.checkBlck(req);
-//    }
-//
-//
+
+    @RequestMapping("/checkFriend")
+    public ResponseVO<?> checkFriendship(@RequestBody @Validated CheckFriendShipReq req){
+        return imFriendShipService.checkFriendship(req);
+    }
+
+    @RequestMapping("/addToBlackList")
+    public ResponseVO<?> addToBlackList(@RequestBody @Validated AddFriendShipBlackReq req){
+        return imFriendShipService.addToBlackList(req);
+    }
+
+    @RequestMapping("/deleteFromBlackList")
+    public ResponseVO<?> deleteFromBlackList(@RequestBody @Validated DeleteBlackReq req){
+        return imFriendShipService.deleteFromBlackList(req);
+    }
+
+    @RequestMapping("/checkIfInBlackList")
+    public ResponseVO<?> checkIfInBlackList(@RequestBody @Validated CheckFriendShipReq req){
+        return imFriendShipService.checkIfInBlackList(req);
+    }
+
 //    @RequestMapping("/syncFriendshipList")
 //    public ResponseVO<?> syncFriendshipList(@RequestBody @Validated SyncReq req, Integer appId){
 //        req.setAppId(appId);
