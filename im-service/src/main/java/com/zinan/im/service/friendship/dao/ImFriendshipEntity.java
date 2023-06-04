@@ -13,7 +13,7 @@ import lombok.Data;
 @Data
 @TableName("im_friendship")
 @AutoMap
-public class ImFriendShipEntity {
+public class ImFriendshipEntity {
 
     @TableField(value = "app_id")
     private Integer appId;

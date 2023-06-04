@@ -5,7 +5,7 @@ package com.zinan.im.common.enums;
  * @date 2023/05/31 19:03
  * @description
  */
-public enum FriendShipStatusEnum {
+public enum FriendshipStatusEnum {
 
     /**
      * 0:Not added 1:Added 2:Deleted
@@ -28,7 +28,7 @@ public enum FriendShipStatusEnum {
 
     private final int code;
 
-    FriendShipStatusEnum(int code) {
+    FriendshipStatusEnum(int code) {
         this.code = code;
     }
 

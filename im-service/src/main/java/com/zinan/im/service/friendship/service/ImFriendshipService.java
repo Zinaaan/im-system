@@ -10,7 +10,7 @@ import com.zinan.im.service.friendship.model.req.*;
  */
 public interface ImFriendshipService {
 
-    ResponseVO<?> importFriendShip(ImportFriendShipReq req);
+    ResponseVO<?> importFriendship(ImportFriendshipReq req);
 
     ResponseVO<?> addFriend(AddFriendReq req);
 
@@ -22,13 +22,21 @@ public interface ImFriendshipService {
 
     ResponseVO<?> getFriendship(GetRelationReq req);
 
-    ResponseVO<?> getAllFriendship(GetAllFriendShipReq req);
+    ResponseVO<?> getAllFriendship(GetAllFriendshipReq req);
 
-    ResponseVO<?> checkFriendship(CheckFriendShipReq req);
+    ResponseVO<?> checkFriendship(CheckFriendshipReq req);
 
-    ResponseVO<?> addToBlackList(AddFriendShipBlackReq req);
+    ResponseVO<?> addToBlackList(AddFriendshipBlackReq req);
 
     ResponseVO<?> deleteFromBlackList(DeleteBlackReq req);
 
-    ResponseVO<?> checkIfInBlackList(CheckFriendShipReq req);
+    ResponseVO<?> checkIfInBlackList(CheckFriendshipReq req);
+
+    ResponseVO<?> addFriendshipRequest(AddFriendReq req);
+
+    ResponseVO<?> approveFriendRequest(ApproverFriendRequestReq req);
+
+    ResponseVO<?> getFriendshipRequest(GetFriendshipRequestReq req);
+
+    ResponseVO<?> readFriendshipRequest(ReadFriendshipRequestReq req);
 }

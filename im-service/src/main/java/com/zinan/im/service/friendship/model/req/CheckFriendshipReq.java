@@ -15,7 +15,7 @@ import java.util.List;
  * @description
  */
 @Data
-public class CheckFriendShipReq extends RequestBase {
+public class CheckFriendshipReq extends RequestBase {
 
     @NotBlank(message = "fromId can not be null")
     private String fromId;

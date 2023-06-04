@@ -7,7 +7,7 @@ import com.zinan.im.common.exception.ApplicationExceptionsStrategy;
  * @date 2023/05/31 18:04
  * @description
  */
-public enum FriendShipErrorCode implements ApplicationExceptionsStrategy {
+public enum FriendshipErrorCode implements ApplicationExceptionsStrategy {
 
     IMPORT_SIZE_BEYOND(30000, "Imported quantity exceeds the limit"),
 
@@ -29,20 +29,24 @@ public enum FriendShipErrorCode implements ApplicationExceptionsStrategy {
 
     FRIEND_IS_NOT_YOUR_BLACK(30010, "Friends are no longer on your blacklist"),
 
-    NOT_APPROVER_OTHER_MAN_REQUEST(30011, "Unable to approve friend request from others"),
+    APPROVE_FRIEND_REQUEST_ERROR(30011, "Adding friends failed"),
 
-    FRIEND_REQUEST_IS_NOT_EXIST(30012, "Friend application does not exist"),
+    NOT_APPROVER_OTHER_MAN_REQUEST(30012, "Unable to approve friend request from others"),
+
+    FRIEND_REQUEST_IS_NOT_EXIST(30013, "Friend application does not exist"),
 
     FRIEND_SHIP_GROUP_CREATE_ERROR(30014, "Friend group creation failed"),
 
     FRIEND_SHIP_GROUP_IS_EXIST(30015, "Friend group already exists"),
 
-    FRIEND_SHIP_GROUP_IS_NOT_EXIST(30016, "Friend group does not exist");
+    FRIEND_SHIP_GROUP_IS_NOT_EXIST(30016, "Friend group does not exist"),
+
+    ADD_FRIEND_REQUEST_ERROR(30017, "Adding friends request failed");
 
     private int code;
     private String error;
 
-    FriendShipErrorCode(int code, String error) {
+    FriendshipErrorCode(int code, String error) {
         this.code = code;
         this.error = error;
     }

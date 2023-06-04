@@ -5,7 +5,7 @@ package com.zinan.im.common.enums;
  * @date 2023/06/1 10:11
  * @description
  */
-public enum CheckFriendShipTypeEnum {
+public enum CheckFriendshipTypeEnum {
 
     /**
      * 1: one-side verification, 2: two-side verification。
@@ -17,7 +17,7 @@ public enum CheckFriendShipTypeEnum {
 
     private final int type;
 
-    CheckFriendShipTypeEnum(int type) {
+    CheckFriendshipTypeEnum(int type) {
         this.type = type;
     }
 

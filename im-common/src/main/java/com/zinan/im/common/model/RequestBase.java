@@ -11,4 +11,6 @@ import lombok.Data;
 public class RequestBase {
 
     private Integer appId;
+
+    private String operator;
 }

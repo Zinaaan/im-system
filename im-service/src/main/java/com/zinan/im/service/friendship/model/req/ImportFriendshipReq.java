@@ -1,6 +1,6 @@
 package com.zinan.im.service.friendship.model.req;
 
-import com.zinan.im.common.enums.FriendShipStatusEnum;
+import com.zinan.im.common.enums.FriendshipStatusEnum;
 import com.zinan.im.common.model.RequestBase;
 import lombok.Data;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * @description
  */
 @Data
-public class ImportFriendShipReq extends RequestBase {
+public class ImportFriendshipReq extends RequestBase {
 
     @NotBlank(message = "fromId can not be null")
     private String fromId;
@@ -34,9 +34,9 @@ public class ImportFriendShipReq extends RequestBase {
         private String addSource;
 
         // Default status 0:not added
-        private Integer status = FriendShipStatusEnum.FRIEND_STATUS_NO_FRIEND.getCode();
+        private Integer status = FriendshipStatusEnum.FRIEND_STATUS_NO_FRIEND.getCode();
 
         // Default black list status 1:normal
-        private Integer black = FriendShipStatusEnum.BLACK_STATUS_NORMAL.getCode();
+        private Integer black = FriendshipStatusEnum.BLACK_STATUS_NORMAL.getCode();
     }
 }

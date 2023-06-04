@@ -78,17 +78,11 @@ public class ImUserServiceImpl implements ImUserService {
         queryWrapper.eq("app_id", req.getAppId());
         queryWrapper.in("user_id", req.getUserIds());
         queryWrapper.eq("del_flag", DelFlagEnum.NORMAL.getCode());
+
         List<ImUserDataEntity> userDataEntities = imUserDataMapper.selectList(queryWrapper);
         Map<String, ImUserDataEntity> map = userDataEntities.stream().collect(Collectors.toMap(ImUserDataEntity::getUserId, Function.identity()));
-//        for (ImUserDataEntity data : userDataEntities) {
-//            map.put(data.getUserId(), data);
-//        }
         List<String> failUser = req.getUserIds().stream().filter(user -> !map.containsKey(user)).collect(Collectors.toList());
-//        for (String uid: req.getUserIds()) {
-//            if(!map.containsKey(uid)){
-//                failUser.add(uid);
-//            }
-//        }
+
         GetUserInfoResp resp = new GetUserInfoResp();
         resp.setUserDataItem(userDataEntities);
         resp.setFailUser(failUser);

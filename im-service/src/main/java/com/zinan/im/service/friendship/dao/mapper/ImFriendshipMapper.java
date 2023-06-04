@@ -1,9 +1,9 @@
 package com.zinan.im.service.friendship.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.zinan.im.service.friendship.dao.ImFriendShipEntity;
-import com.zinan.im.service.friendship.model.req.CheckFriendShipReq;
-import com.zinan.im.service.friendship.model.resp.CheckFriendShipResp;
+import com.zinan.im.service.friendship.dao.ImFriendshipEntity;
+import com.zinan.im.service.friendship.model.req.CheckFriendshipReq;
+import com.zinan.im.service.friendship.model.resp.CheckFriendshipResp;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Mapper
 @Repository
-public interface ImFriendShipMapper extends BaseMapper<ImFriendShipEntity> {
+public interface ImFriendshipMapper extends BaseMapper<ImFriendshipEntity> {
 
 
     @Select("<script>" +
@@ -27,7 +27,7 @@ public interface ImFriendShipMapper extends BaseMapper<ImFriendShipEntity> {
             "</foreach>" +
             " and app_id = #{appId} " +
             "</script>")
-    List<CheckFriendShipResp> checkFriendShip(CheckFriendShipReq req);
+    List<CheckFriendshipResp> checkFriendship(CheckFriendshipReq req);
 
     @Select("<script>" +
             " select a.fromId,a.toId , ( \n" +
@@ -52,7 +52,7 @@ public interface ImFriendShipMapper extends BaseMapper<ImFriendShipEntity> {
             " on a.fromId = b.toId AND b.fromId = a.toId " +
             "</script>"
     )
-    List<CheckFriendShipResp> checkFriendShipBoth(CheckFriendShipReq toId);
+    List<CheckFriendshipResp> checkFriendshipBoth(CheckFriendshipReq toId);
 
 
     @Select("<script>" +
@@ -62,7 +62,7 @@ public interface ImFriendShipMapper extends BaseMapper<ImFriendShipEntity> {
             "</foreach>" +
             "</script>"
     )
-    List<CheckFriendShipResp> checkFriendShipBlack(CheckFriendShipReq req);
+    List<CheckFriendshipResp> checkFriendshipBlack(CheckFriendshipReq req);
 
     @Select("<script>" +
             " select a.fromId,a.toId , ( \n" +
@@ -87,10 +87,10 @@ public interface ImFriendShipMapper extends BaseMapper<ImFriendShipEntity> {
             " on a.fromId = b.toId AND b.fromId = a.toId " +
             "</script>"
     )
-    List<CheckFriendShipResp> checkFriendShipBlackBoth(CheckFriendShipReq toId);
+    List<CheckFriendshipResp> checkFriendshipBlackBoth(CheckFriendshipReq toId);
 
     @Select(" select max(friend_sequence) from im_friendship where app_id = #{appId} AND from_id = #{userId} ")
-    Long getFriendShipMaxSeq(Integer appId, String userId);
+    Long getFriendshipMaxSeq(Integer appId, String userId);
 
     @Select(" select to_id from im_friendship where from_id = #{userId} AND app_id = #{appId} and status = 1 and black = 1 ")
     List<String> getAllFriendId(String userId, Integer appId);

@@ -33,7 +33,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class CheckFriendShipResp {
+public class CheckFriendshipResp {
 
     private String fromId;
 

@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
  * @description
  */
 @Data
-public class GetAllFriendShipReq extends RequestBase {
+public class GetFriendshipRequestReq extends RequestBase {
 
     @NotBlank(message = "fromId can not be null")
     private String fromId;
