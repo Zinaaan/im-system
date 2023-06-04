@@ -1,5 +1,5 @@
 # im-system
-Im system by integrating Netty and Spring-boot
+Instant Messaging system implemented by Netty and Spring-boot
 
 ## Process of checking friendship
 The request data: 
