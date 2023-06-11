@@ -14,17 +14,13 @@ import java.util.List;
  * @description
  */
 @Data
-public class DeleteFriendShipGroupMemberReq extends RequestBase {
+public class DeleteFriendshipGroupReq extends RequestBase {
 
     @NotBlank(message = "fromId can not be null")
     private String fromId;
 
-    @NotBlank(message = "groupName can not be null")
-    private String groupName;
-
-    @NotEmpty(message = "toIds can not be null")
-    @Size(min = 1, message = "At least one toId is required")
-    private List<String> toIds;
-
+    @NotEmpty(message = "groupName can not be null")
+    @Size(min = 1, message = "At least one group name is required")
+    private List<String> groupName;
 
 }

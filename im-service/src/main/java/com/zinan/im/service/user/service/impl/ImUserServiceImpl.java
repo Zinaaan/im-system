@@ -163,7 +163,7 @@ public class ImUserServiceImpl implements ImUserService {
 //            BeanUtils.copyProperties(req,pack);
 //        }
 
-        return null;
+        return ResponseVO.successResponse();
     }
 
     @Override

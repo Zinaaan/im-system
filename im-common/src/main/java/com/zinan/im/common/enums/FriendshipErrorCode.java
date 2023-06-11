@@ -29,7 +29,7 @@ public enum FriendshipErrorCode implements ApplicationExceptionsStrategy {
 
     FRIEND_IS_NOT_YOUR_BLACK(30010, "Friends are no longer on your blacklist"),
 
-    APPROVE_FRIEND_REQUEST_ERROR(30011, "Adding friends failed"),
+    APPROVE_FRIEND_REQUEST_ERROR(30011, "Approve friends requests failed"),
 
     NOT_APPROVER_OTHER_MAN_REQUEST(30012, "Unable to approve friend request from others"),
 
@@ -41,7 +41,9 @@ public enum FriendshipErrorCode implements ApplicationExceptionsStrategy {
 
     FRIEND_SHIP_GROUP_IS_NOT_EXIST(30016, "Friend group does not exist"),
 
-    ADD_FRIEND_REQUEST_ERROR(30017, "Adding friends request failed");
+    ADD_FRIEND_REQUEST_ERROR(30017, "Adding friends request failed"),
+
+    FRIEND_SHIP_GROUP_MEMBER_DELETE_ERROR(30018, "Friendship group member delete failed");
 
     private int code;
     private String error;
