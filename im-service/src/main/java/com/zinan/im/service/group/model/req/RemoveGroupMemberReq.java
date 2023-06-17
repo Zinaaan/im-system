@@ -1,0 +1,23 @@
+package com.zinan.im.service.group.model.req;
+
+
+import com.zinan.im.common.model.RequestBase;
+import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+
+/**
+ * @author lzn
+ * @date 2023/06/10 19:03
+ * @description
+ */
+@Data
+public class RemoveGroupMemberReq extends RequestBase {
+
+    @NotBlank(message = "group id can not be empty")
+    private String groupId;
+
+    @NotEmpty(message = "member id can not be empty")
+    private String memberId;
+}
