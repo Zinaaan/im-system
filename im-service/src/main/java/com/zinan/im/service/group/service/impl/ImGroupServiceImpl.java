@@ -99,7 +99,6 @@ public class ImGroupServiceImpl implements ImGroupService {
 
         boolean isAdmin = false;
         if (!isAdmin) {
-            // TODO Validate privileges
             ResponseVO<?> roleInGroup = getRoleInGroup(req.getGroupId(), req.getOperator(), req.getAppId());
             if (!roleInGroup.isOk()) {
                 return roleInGroup;
