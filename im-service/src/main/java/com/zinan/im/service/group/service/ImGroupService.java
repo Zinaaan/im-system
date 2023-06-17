@@ -1,8 +1,7 @@
 package com.zinan.im.service.group.service;
 
 import com.zinan.im.common.ResponseVO;
-import com.zinan.im.service.group.model.req.GetGroupReq;
-import com.zinan.im.service.group.model.req.ImportGroupReq;
+import com.zinan.im.service.group.model.req.*;
 
 /**
  * @author lzn
@@ -13,5 +12,18 @@ public interface ImGroupService {
 
     ResponseVO<?> importGroup(ImportGroupReq req);
 
-    ResponseVO<?> getGroup(GetGroupReq req);
+    ResponseVO<?> updateGroupInfo(UpdateGroupReq req);
+
+    ResponseVO<?> getGroupInfo(GetGroupReq req);
+
+    ResponseVO<?> createGroup(CreateGroupReq req);
+
+    // Group member operations
+    ResponseVO<?> importGroupMember(ImportGroupMemberReq req);
+
+    ResponseVO<?> addGroupMember(AddGroupMemberReq req);
+
+    ResponseVO<?> getRoleInGroup(String groupId, String memberId, Integer appId);
+
+
 }
