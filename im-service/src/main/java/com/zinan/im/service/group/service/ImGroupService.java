@@ -20,6 +20,10 @@ public interface ImGroupService {
 
     ResponseVO<?> getJoinedGroup(GetJoinedGroupReq req);
 
+    ResponseVO<?> destroyGroup(DestroyGroupReq req);
+
+    ResponseVO<?> transferGroup(TransferGroupReq req);
+
     ResponseVO<?> getMemberJoinedGroup(GetJoinedGroupReq req);
 
     // Group member operations
@@ -28,6 +32,4 @@ public interface ImGroupService {
     ResponseVO<?> addGroupMember(AddGroupMemberReq req);
 
     ResponseVO<?> getRoleInGroup(String groupId, String memberId, Integer appId);
-
-
 }

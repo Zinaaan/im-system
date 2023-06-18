@@ -1,7 +1,10 @@
 package com.zinan.im.service.group.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,6 +18,7 @@ import com.zinan.im.service.group.dao.ImGroupEntity;
 import com.zinan.im.service.group.dao.ImGroupMemberEntity;
 import com.zinan.im.service.group.dao.mapper.ImGroupMapper;
 import com.zinan.im.service.group.dao.mapper.ImGroupMemberMapper;
+import com.zinan.im.service.group.model.callback.DestroyGroupCallbackDto;
 import com.zinan.im.service.group.model.req.*;
 import com.zinan.im.service.group.model.resp.AddMemberResp;
 import com.zinan.im.service.group.model.resp.GetGroupResp;
@@ -234,6 +238,79 @@ public class ImGroupServiceImpl implements ImGroupService {
     }
 
     @Override
+    public ResponseVO<?> destroyGroup(DestroyGroupReq req) {
+
+        boolean isAdmin = false;
+        LambdaQueryWrapper<ImGroupEntity> objectQueryWrapper = new LambdaQueryWrapper<>();
+        objectQueryWrapper.eq(ImGroupEntity::getGroupId, req.getGroupId());
+        objectQueryWrapper.eq(ImGroupEntity::getAppId, req.getAppId());
+        ImGroupEntity imGroupEntity = imGroupMapper.selectOne(objectQueryWrapper);
+        if (imGroupEntity == null) {
+            throw new ApplicationException(GroupErrorCode.PRIVATE_GROUP_CAN_NOT_DISSOLVE);
+        }
+
+        if (imGroupEntity.getStatus() == GroupStatusEnum.DISSOLVE.getCode()) {
+            throw new ApplicationException(GroupErrorCode.GROUP_IS_DISSOLVE);
+        }
+
+        if (!isAdmin) {
+            if (imGroupEntity.getGroupType() == GroupTypeEnum.PUBLIC.getCode()) {
+                throw new ApplicationException(GroupErrorCode.THIS_OPERATE_NEED_OWNER_ROLE);
+            }
+
+            if (imGroupEntity.getGroupType() == GroupTypeEnum.PUBLIC.getCode() &&
+                    !imGroupEntity.getOwnerId().equals(req.getOperator())) {
+                throw new ApplicationException(GroupErrorCode.THIS_OPERATE_NEED_OWNER_ROLE);
+            }
+        }
+
+        ImGroupEntity update = new ImGroupEntity();
+
+        update.setStatus(GroupStatusEnum.DISSOLVE.getCode());
+        int update1 = imGroupMapper.update(update, objectQueryWrapper);
+        if (update1 != 1) {
+            throw new ApplicationException(GroupErrorCode.UPDATE_GROUP_BASE_INFO_ERROR);
+        }
+
+        return ResponseVO.successResponse();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseVO<?> transferGroup(TransferGroupReq req) {
+        ResponseVO<?> roleInGroupOne = getRoleInGroup(req.getGroupId(), req.getOperator(), req.getAppId());
+        if (!roleInGroupOne.isOk()) {
+            return roleInGroupOne;
+        }
+
+        GetRoleInGroupResp resp = (GetRoleInGroupResp) roleInGroupOne.getData();
+        if (resp.getRole() != GroupMemberRoleEnum.OWNER.getCode()) {
+            return ResponseVO.errorResponse(GroupErrorCode.THIS_OPERATE_NEED_OWNER_ROLE);
+        }
+
+        ResponseVO<?> newOwnerRole = getRoleInGroup(req.getGroupId(), req.getOwnerId(), req.getAppId());
+        if (!newOwnerRole.isOk()) {
+            return newOwnerRole;
+        }
+
+        LambdaQueryWrapper<ImGroupEntity> objectQueryWrapper = new LambdaQueryWrapper<>();
+        objectQueryWrapper.eq(ImGroupEntity::getGroupId, req.getGroupId());
+        objectQueryWrapper.eq(ImGroupEntity::getAppId, req.getAppId());
+        ImGroupEntity imGroupEntity = imGroupMapper.selectOne(objectQueryWrapper);
+        if (imGroupEntity.getStatus() == GroupStatusEnum.DISSOLVE.getCode()) {
+            throw new ApplicationException(GroupErrorCode.GROUP_IS_DISSOLVE);
+        }
+
+        ImGroupEntity updateGroup = new ImGroupEntity();
+        updateGroup.setOwnerId(req.getOwnerId());
+        LambdaUpdateWrapper<ImGroupEntity> updateGroupWrapper = new LambdaUpdateWrapper<>();
+        updateGroupWrapper.eq(ImGroupEntity::getAppId, req.getAppId());
+        updateGroupWrapper.eq(ImGroupEntity::getGroupId, req.getGroupId());
+        imGroupMapper.update(updateGroup, updateGroupWrapper);
+        return transferGroupMember(req.getOwnerId(), req.getGroupId(), req.getAppId());
+    }
+
+    @Override
     public ResponseVO<?> getMemberJoinedGroup(GetJoinedGroupReq req) {
 
         if (req.getLimit() != null) {
@@ -350,6 +427,29 @@ public class ImGroupServiceImpl implements ImGroupService {
     public ResponseVO<?> getGroupMember(String groupId, Integer appId) {
         List<GroupMemberDto> groupMember = imGroupMemberMapper.getGroupMember(appId, groupId);
         return ResponseVO.successResponse(groupMember);
+    }
+
+    public ResponseVO<?> transferGroupMember(String owner, String groupId, Integer appId) {
+
+        // Update stale owner of group
+        ImGroupMemberEntity imGroupMemberEntity = new ImGroupMemberEntity();
+        imGroupMemberEntity.setRole(GroupMemberRoleEnum.ORDINARY.getCode());
+        LambdaUpdateWrapper<ImGroupMemberEntity> oldWrapper = new LambdaUpdateWrapper<>();
+        oldWrapper.eq(ImGroupMemberEntity::getAppId, appId);
+        oldWrapper.eq(ImGroupMemberEntity::getGroupId, groupId);
+        oldWrapper.eq(ImGroupMemberEntity::getRole, GroupMemberRoleEnum.OWNER.getCode());
+        imGroupMemberMapper.update(imGroupMemberEntity, oldWrapper);
+
+        // Update new owner of group
+        ImGroupMemberEntity newOwner = new ImGroupMemberEntity();
+        newOwner.setRole(GroupMemberRoleEnum.OWNER.getCode());
+        LambdaUpdateWrapper<ImGroupMemberEntity> newWrapper = new LambdaUpdateWrapper<>();
+        newWrapper.eq(ImGroupMemberEntity::getAppId, appId);
+        newWrapper.eq(ImGroupMemberEntity::getGroupId, groupId);
+        newWrapper.eq(ImGroupMemberEntity::getMemberId, owner);
+        imGroupMemberMapper.update(newOwner, newWrapper);
+
+        return ResponseVO.successResponse();
     }
 
     @Override

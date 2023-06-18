@@ -52,4 +52,14 @@ public class ImGroupController {
     public ResponseVO<?> getJoinedGroup(@RequestBody @Validated GetJoinedGroupReq req)  {
         return imGroupService.getJoinedGroup(req);
     }
+
+    @RequestMapping("/destroyGroup")
+    public ResponseVO<?> destroyGroup(@RequestBody @Validated DestroyGroupReq req)  {
+        return imGroupService.destroyGroup(req);
+    }
+
+    @RequestMapping("/transferGroup")
+    public ResponseVO<?> transferGroup(@RequestBody @Validated TransferGroupReq req)  {
+        return imGroupService.transferGroup(req);
+    }
 }
