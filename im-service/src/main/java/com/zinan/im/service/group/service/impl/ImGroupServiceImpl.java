@@ -309,6 +309,53 @@ public class ImGroupServiceImpl implements ImGroupService {
     }
 
     @Override
+    public ResponseVO<?> muteGroup(MuteGroupReq req) {
+        GetGroupReq getGroupReq = new GetGroupReq();
+        BeanUtils.copyProperties(req, getGroupReq);
+        ResponseVO<?> groupResp = getGroupInfo(getGroupReq);
+        if (!groupResp.isOk()) {
+            return groupResp;
+        }
+
+        ImGroupEntity imGroupEntity = (ImGroupEntity) groupResp.getData();
+        if (imGroupEntity.getStatus() == GroupStatusEnum.DISSOLVE.getCode()) {
+            throw new ApplicationException(GroupErrorCode.GROUP_IS_DISSOLVE);
+        }
+
+        boolean isAdmin = false;
+
+        if (!isAdmin) {
+
+            // Check privileges
+            ResponseVO<?> privileges = getRoleInGroup(req.getGroupId(), req.getOperator(), req.getAppId());
+
+            if (!privileges.isOk()) {
+                return privileges;
+            }
+
+            GetRoleInGroupResp data = (GetRoleInGroupResp) privileges.getData();
+            Integer roleInfo = data.getRole();
+
+            boolean isManager = roleInfo == GroupMemberRoleEnum.ADMIN.getCode() || roleInfo == GroupMemberRoleEnum.OWNER.getCode();
+
+            // Public groups can only be modified by the group owner
+            if (!isManager) {
+                throw new ApplicationException(GroupErrorCode.THIS_OPERATE_NEED_ADMIN_ROLE);
+            }
+        }
+
+        ImGroupEntity update = new ImGroupEntity();
+        update.setMute(req.getMute());
+
+        LambdaUpdateWrapper<ImGroupEntity> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.eq(ImGroupEntity::getGroupId, req.getGroupId());
+        wrapper.eq(ImGroupEntity::getAppId, req.getAppId());
+        imGroupMapper.update(update, wrapper);
+
+        return ResponseVO.successResponse();
+    }
+
+    @Override
     public ResponseVO<?> getMemberJoinedGroup(GetJoinedGroupReq req) {
 
         if (req.getLimit() != null) {
@@ -582,7 +629,7 @@ public class ImGroupServiceImpl implements ImGroupService {
             throw new ApplicationException(GroupErrorCode.GROUP_IS_DISSOLVE);
         }
 
-        //是否是自己修改自己的资料
+        // Whether it is to modify your own information
         boolean isMeOperate = req.getOperator().equals(req.getMemberId());
 
         if (!isAdmin) {
@@ -599,16 +646,16 @@ public class ImGroupServiceImpl implements ImGroupService {
             }
 
             // If we want to modify the privileges related then follow the logic below
-            if(req.getRole() != null){
+            if (req.getRole() != null) {
                 // Whether the operator's is in the group
                 ResponseVO<?> roleInGroupOne = getRoleInGroup(req.getGroupId(), req.getMemberId(), req.getAppId());
-                if(!roleInGroupOne.isOk()){
+                if (!roleInGroupOne.isOk()) {
                     return roleInGroupOne;
                 }
 
                 // Get operator privileges
                 ResponseVO<?> operateRoleInGroupOne = getRoleInGroup(req.getGroupId(), req.getOperator(), req.getAppId());
-                if(!operateRoleInGroupOne.isOk()){
+                if (!operateRoleInGroupOne.isOk()) {
                     return operateRoleInGroupOne;
                 }
 
@@ -618,12 +665,12 @@ public class ImGroupServiceImpl implements ImGroupService {
                 boolean isManager = roleInfo == GroupMemberRoleEnum.ADMIN.getCode();
 
                 // Only admin can modify privileges
-                if(req.getRole() != null && !isOwner && !isManager){
+                if (req.getRole() != null && !isOwner && !isManager) {
                     return ResponseVO.errorResponse(GroupErrorCode.THIS_OPERATE_NEED_ADMIN_ROLE);
                 }
 
                 // Only group owner can set up the admin role
-                if(req.getRole() != null && req.getRole() == GroupMemberRoleEnum.ADMIN.getCode() && !isOwner){
+                if (req.getRole() != null && req.getRole() == GroupMemberRoleEnum.ADMIN.getCode() && !isOwner) {
                     return ResponseVO.errorResponse(GroupErrorCode.THIS_OPERATE_NEED_OWNER_ROLE);
                 }
             }
@@ -634,9 +681,8 @@ public class ImGroupServiceImpl implements ImGroupService {
             update.setAlias(req.getAlias());
         }
 
-        //不能直接修改为群主
         // Can not be modified directly to the group owner
-        if(req.getRole() != null && req.getRole() != GroupMemberRoleEnum.OWNER.getCode()){
+        if (req.getRole() != null && req.getRole() != GroupMemberRoleEnum.OWNER.getCode()) {
             update.setRole(req.getRole());
         }
 
@@ -645,6 +691,74 @@ public class ImGroupServiceImpl implements ImGroupService {
         objectUpdateWrapper.eq("member_id", req.getMemberId());
         objectUpdateWrapper.eq("group_id", req.getGroupId());
         imGroupMemberMapper.update(update, objectUpdateWrapper);
+
+        return ResponseVO.successResponse();
+    }
+
+    @Override
+    public ResponseVO<?> muteGroupMember(MuteMemberReq req) {
+        GetGroupReq getGroupReq = new GetGroupReq();
+        BeanUtils.copyProperties(req, getGroupReq);
+        ResponseVO<?> groupResp = getGroupInfo(getGroupReq);
+        if (!groupResp.isOk()) {
+            return groupResp;
+        }
+        boolean isAdmin = false;
+        GetRoleInGroupResp memberRole = null;
+
+        if (!isAdmin) {
+
+            // Obtain the operator's permissions as administrator or group owner or group member
+            ResponseVO<?> role = getRoleInGroup(req.getGroupId(), req.getOperator(), req.getAppId());
+            if (!role.isOk()) {
+                return role;
+            }
+
+            GetRoleInGroupResp data = (GetRoleInGroupResp) role.getData();
+            Integer roleInfo = data.getRole();
+
+            boolean isOwner = roleInfo == GroupMemberRoleEnum.OWNER.getCode();
+            boolean isManager = roleInfo == GroupMemberRoleEnum.ADMIN.getCode();
+
+            if (!isOwner && !isManager) {
+                throw new ApplicationException(GroupErrorCode.THIS_OPERATE_NEED_ADMIN_ROLE);
+            }
+
+            // Get permission to be operated
+            ResponseVO<?> roleInGroupOne = getRoleInGroup(req.getGroupId(), req.getMemberId(), req.getAppId());
+            if (!roleInGroupOne.isOk()) {
+                return roleInGroupOne;
+            }
+            memberRole = (GetRoleInGroupResp) roleInGroupOne.getData();
+            // If the person being operated is the group owner, only the app administrator can operate on it
+            if (memberRole.getRole() == GroupMemberRoleEnum.OWNER.getCode()) {
+                throw new ApplicationException(GroupErrorCode.THIS_OPERATE_NEED_ADMIN_ROLE);
+            }
+
+            // The current user is an administrator and the person being operated is not a member of the group, so it cannot be operated.
+            if (isManager && memberRole.getRole() != GroupMemberRoleEnum.ORDINARY.getCode()) {
+                throw new ApplicationException(GroupErrorCode.THIS_OPERATE_NEED_OWNER_ROLE);
+            }
+        }
+
+        ImGroupMemberEntity imGroupMemberEntity = new ImGroupMemberEntity();
+        if (memberRole == null) {
+            //获取被操作的权限
+            ResponseVO<?> roleInGroupOne = getRoleInGroup(req.getGroupId(), req.getMemberId(), req.getAppId());
+            if (!roleInGroupOne.isOk()) {
+                return roleInGroupOne;
+            }
+            memberRole = (GetRoleInGroupResp) roleInGroupOne.getData();
+        }
+
+        imGroupMemberEntity.setGroupMemberId(memberRole.getGroupMemberId());
+        if (req.getSpeakDate() > 0) {
+            imGroupMemberEntity.setSpeakDate(System.currentTimeMillis() + req.getSpeakDate());
+        } else {
+            imGroupMemberEntity.setSpeakDate(req.getSpeakDate());
+        }
+
+        imGroupMemberMapper.updateById(imGroupMemberEntity);
 
         return ResponseVO.successResponse();
     }

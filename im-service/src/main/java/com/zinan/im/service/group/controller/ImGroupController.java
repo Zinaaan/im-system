@@ -58,6 +58,11 @@ public class ImGroupController {
         return imGroupService.transferGroup(req);
     }
 
+    @RequestMapping("/muteGroup")
+    public ResponseVO<?> muteGroup(@RequestBody @Validated MuteGroupReq req)  {
+        return imGroupService.muteGroup(req);
+    }
+
     @RequestMapping("/importGroupMember")
     public ResponseVO<?> importGroupMember(@RequestBody @Validated ImportGroupMemberReq req) {
         return imGroupService.importGroupMember(req);
@@ -76,5 +81,10 @@ public class ImGroupController {
     @RequestMapping("/updateGroupMember")
     public ResponseVO<?> updateGroupMember(@RequestBody @Validated UpdateGroupMemberReq req)  {
         return imGroupService.updateGroupMember(req);
+    }
+
+    @RequestMapping("/muteGroupMember")
+    public ResponseVO<?> muteGroupMember(@RequestBody @Validated MuteMemberReq req)  {
+        return imGroupService.muteGroupMember(req);
     }
 }

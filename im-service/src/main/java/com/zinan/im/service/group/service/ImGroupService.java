@@ -24,6 +24,8 @@ public interface ImGroupService {
 
     ResponseVO<?> transferGroup(TransferGroupReq req);
 
+    ResponseVO<?> muteGroup(MuteGroupReq req);
+
     ResponseVO<?> getMemberJoinedGroup(GetJoinedGroupReq req);
 
     // Group member operations
@@ -36,4 +38,6 @@ public interface ImGroupService {
     ResponseVO<?> removeGroupMember(RemoveGroupMemberReq req);
 
     ResponseVO<?> updateGroupMember(UpdateGroupMemberReq req);
+
+    ResponseVO<?> muteGroupMember(MuteMemberReq req);
 }
