@@ -18,6 +18,10 @@ public interface ImGroupService {
 
     ResponseVO<?> createGroup(CreateGroupReq req);
 
+    ResponseVO<?> getJoinedGroup(GetJoinedGroupReq req);
+
+    ResponseVO<?> getMemberJoinedGroup(GetJoinedGroupReq req);
+
     // Group member operations
     ResponseVO<?> importGroupMember(ImportGroupMemberReq req);
 

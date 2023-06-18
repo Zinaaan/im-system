@@ -2,6 +2,9 @@ package com.zinan.im.service.group.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zinan.im.common.ResponseVO;
 import com.zinan.im.common.enums.GroupErrorCode;
 import com.zinan.im.common.enums.GroupMemberRoleEnum;
@@ -15,6 +18,7 @@ import com.zinan.im.service.group.dao.mapper.ImGroupMemberMapper;
 import com.zinan.im.service.group.model.req.*;
 import com.zinan.im.service.group.model.resp.AddMemberResp;
 import com.zinan.im.service.group.model.resp.GetGroupResp;
+import com.zinan.im.service.group.model.resp.GetJoinedGroupResp;
 import com.zinan.im.service.group.model.resp.GetRoleInGroupResp;
 import com.zinan.im.service.group.service.ImGroupService;
 import com.zinan.im.service.user.dao.ImUserDataEntity;
@@ -26,9 +30,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -110,7 +112,7 @@ public class ImGroupServiceImpl implements ImGroupService {
             boolean isOwner = role == GroupMemberRoleEnum.OWNER.getCode();
 
             // Only admin could modify info if the current group is public
-            if (GroupTypeEnum.PUBLIC.getCode() == imGroupEntity.getGroupType() && (isManager || isOwner)) {
+            if (GroupTypeEnum.PUBLIC.getCode() == imGroupEntity.getGroupType() && !(isManager || isOwner)) {
                 return ResponseVO.errorResponse(GroupErrorCode.THIS_OPERATE_NEED_ADMIN_ROLE);
             }
         } else {
@@ -141,7 +143,7 @@ public class ImGroupServiceImpl implements ImGroupService {
         GetGroupResp resp = new GetGroupResp();
         BeanUtils.copyProperties(imGroupEntity, resp);
         ResponseVO<?> groupMember = getGroupMember(req.getGroupId(), req.getAppId());
-        if(groupMember.isOk()){
+        if (groupMember.isOk()) {
             List<GroupMemberDto> groupMemberDtoList = (List<GroupMemberDto>) groupMember.getData();
             resp.setMemberList(groupMemberDtoList);
         }
@@ -197,12 +199,63 @@ public class ImGroupServiceImpl implements ImGroupService {
         return ResponseVO.successResponse();
     }
 
+    @Override
+    public ResponseVO<?> getJoinedGroup(GetJoinedGroupReq req) {
+
+        ResponseVO<?> memberJoinedGroup = getMemberJoinedGroup(req);
+        if (memberJoinedGroup.isOk()) {
+            GetJoinedGroupResp resp = new GetJoinedGroupResp();
+            Set<String> groupIds = (Set<String>) memberJoinedGroup.getData();
+            if (CollectionUtils.isEmpty(groupIds)) {
+                resp.setTotalCount(0);
+                resp.setGroupList(new ArrayList<>());
+                return ResponseVO.successResponse(resp);
+            }
+
+            LambdaQueryWrapper<ImGroupEntity> query = new LambdaQueryWrapper<>();
+            query.eq(ImGroupEntity::getAppId, req.getAppId());
+            query.in(ImGroupEntity::getGroupId, groupIds);
+
+            if (CollectionUtils.isNotEmpty(req.getGroupType())) {
+                query.in(ImGroupEntity::getGroupId, req.getGroupType());
+            }
+
+            List<ImGroupEntity> groupList = imGroupMapper.selectList(query);
+            resp.setGroupList(groupList);
+            if (req.getLimit() == null) {
+                resp.setTotalCount(groupList.size());
+            } else {
+                resp.setTotalCount(imGroupMapper.selectCount(query));
+            }
+            return ResponseVO.successResponse(resp);
+        }
+
+        return memberJoinedGroup;
+    }
+
+    @Override
+    public ResponseVO<?> getMemberJoinedGroup(GetJoinedGroupReq req) {
+
+        if (req.getLimit() != null) {
+            Page<ImGroupMemberEntity> objectPage = new Page<>(req.getOffset(), req.getLimit());
+            LambdaQueryWrapper<ImGroupMemberEntity> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(ImGroupMemberEntity::getAppId, req.getAppId());
+            wrapper.eq(ImGroupMemberEntity::getMemberId, req.getMemberId());
+            IPage<ImGroupMemberEntity> imGroupMemberEntityPage = imGroupMemberMapper.selectPage(objectPage, wrapper);
+            Set<String> groupId = new HashSet<>();
+            List<ImGroupMemberEntity> records = imGroupMemberEntityPage.getRecords();
+            records.forEach(e -> groupId.add(e.getGroupId()));
+
+            return ResponseVO.successResponse(groupId);
+        }
+
+        return ResponseVO.successResponse(imGroupMemberMapper.getJoinedGroupId(req.getAppId(), req.getMemberId()));
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseVO<?> importGroupMember(ImportGroupMemberReq req) {
 
-//        List<AddMemberResp> resp = new ArrayList<>();
         GetGroupReq getReq = new GetGroupReq();
         getReq.setGroupId(req.getGroupId());
         getReq.setAppId(req.getAppId());
@@ -218,21 +271,6 @@ public class ImGroupServiceImpl implements ImGroupService {
         addGroupMemberReq.setAppId(req.getAppId());
         addGroupMemberReq.setOperator(req.getOperator());
 
-//        for (GroupMemberDto memberId : req.getMembers()) {
-//            ResponseVO<?> responseVO = addGroupMember(req.getGroupId(), req.getAppId(), memberId);
-//            AddMemberResp addMemberResp = new AddMemberResp();
-//            addMemberResp.setMemberId(memberId.getMemberId());
-//            if (responseVO.isOk()) {
-//                addMemberResp.setResult(0);
-//            } else if (responseVO.getCode() == GroupErrorCode.USER_IS_JOINED_GROUP.getCode()) {
-//                addMemberResp.setResult(2);
-//            } else {
-//                addMemberResp.setResult(1);
-//            }
-//            resp.add(addMemberResp);
-//        }
-
-//        return ResponseVO.successResponse(resp);
         return addGroupMember(addGroupMemberReq);
     }
 
@@ -268,7 +306,6 @@ public class ImGroupServiceImpl implements ImGroupService {
                 Integer ownerNum = imGroupMemberMapper.selectCount(queryOwner);
                 if (ownerNum > 0) {
                     addMemberResp.setResult(1);
-//                    return ResponseVO.errorResponse(GroupErrorCode.GROUP_IS_HAVE_OWNER);
                 }
             }
 
@@ -289,9 +326,7 @@ public class ImGroupServiceImpl implements ImGroupService {
                 int insert = imGroupMemberMapper.insert(memberDto);
                 if (insert == 1) {
                     addMemberResp.setResult(0);
-//                    return ResponseVO.successResponse();
                 }
-//                return ResponseVO.errorResponse(GroupErrorCode.USER_JOIN_GROUP_ERROR);
                 addMemberResp.setResult(2);
             } else if (GroupMemberRoleEnum.LEAVE.getCode() == memberDto.getRole()) {
                 //重新进群
@@ -303,57 +338,12 @@ public class ImGroupServiceImpl implements ImGroupService {
                     addMemberResp.setResult(0);
                     return ResponseVO.successResponse();
                 }
-//                return ResponseVO.errorResponse(GroupErrorCode.USER_JOIN_GROUP_ERROR);
                 addMemberResp.setResult(2);
             }
 
             resp.add(addMemberResp);
         }
 
-
-//        if (dto.getRole() != null && GroupMemberRoleEnum.OWNER.getCode() == dto.getRole()) {
-//            QueryWrapper<ImGroupMemberEntity> queryOwner = new QueryWrapper<>();
-//            queryOwner.eq("group_id", groupId);
-//            queryOwner.eq("app_id", appId);
-//            queryOwner.eq("role", GroupMemberRoleEnum.OWNER.getCode());
-//            Integer ownerNum = ii.selectCount(queryOwner);
-//            if (ownerNum > 0) {
-//                return ResponseVO.errorResponse(GroupErrorCode.GROUP_IS_HAVE_OWNER);
-//            }
-//        }
-//
-//        QueryWrapper<ImGroupMemberEntity> query = new QueryWrapper<>();
-//        query.eq("group_id", groupId);
-//        query.eq("app_id", appId);
-//        query.eq("member_id", dto.getMemberId());
-//        ImGroupMemberEntity memberDto = imGroupMemberMapper.selectOne(query);
-//
-//        long now = System.currentTimeMillis();
-//        if (memberDto == null) {
-//            //初次加群
-//            memberDto = new ImGroupMemberEntity();
-//            BeanUtils.copyProperties(dto, memberDto);
-//            memberDto.setGroupId(groupId);
-//            memberDto.setAppId(appId);
-//            memberDto.setJoinTime(now);
-//            int insert = imGroupMemberMapper.insert(memberDto);
-//            if (insert == 1) {
-//                return ResponseVO.successResponse();
-//            }
-//            return ResponseVO.errorResponse(GroupErrorCode.USER_JOIN_GROUP_ERROR);
-//        } else if (GroupMemberRoleEnum.LEAVE.getCode() == memberDto.getRole()) {
-//            //重新进群
-//            memberDto = new ImGroupMemberEntity();
-//            BeanUtils.copyProperties(dto, memberDto);
-//            memberDto.setJoinTime(now);
-//            int update = imGroupMemberMapper.update(memberDto, query);
-//            if (update == 1) {
-//                return ResponseVO.successResponse();
-//            }
-//            return ResponseVO.errorResponse(GroupErrorCode.USER_JOIN_GROUP_ERROR);
-//        }
-
-//        return ResponseVO.errorResponse(GroupErrorCode.USER_IS_JOINED_GROUP);
         return ResponseVO.successResponse(resp);
     }
 

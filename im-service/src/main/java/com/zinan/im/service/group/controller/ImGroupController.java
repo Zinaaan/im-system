@@ -47,4 +47,9 @@ public class ImGroupController {
     public ResponseVO<?> getGroupInfo(@RequestBody @Validated GetGroupReq req)  {
         return imGroupService.getGroupInfo(req);
     }
+
+    @RequestMapping("/getJoinedGroup")
+    public ResponseVO<?> getJoinedGroup(@RequestBody @Validated GetJoinedGroupReq req)  {
+        return imGroupService.getJoinedGroup(req);
+    }
 }
