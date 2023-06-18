@@ -29,7 +29,11 @@ public interface ImGroupService {
     // Group member operations
     ResponseVO<?> importGroupMember(ImportGroupMemberReq req);
 
+    ResponseVO<?> getRoleInGroup(String groupId, String memberId, Integer appId);
+
     ResponseVO<?> addGroupMember(AddGroupMemberReq req);
 
-    ResponseVO<?> getRoleInGroup(String groupId, String memberId, Integer appId);
+    ResponseVO<?> removeGroupMember(RemoveGroupMemberReq req);
+
+    ResponseVO<?> updateGroupMember(UpdateGroupMemberReq req);
 }

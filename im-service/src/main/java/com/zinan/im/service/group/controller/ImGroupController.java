@@ -24,13 +24,38 @@ public class ImGroupController {
     }
 
     @RequestMapping("/importGroup")
-    public ResponseVO<?> importGroup(@RequestBody @Validated ImportGroupReq req)  {
+    public ResponseVO<?> importGroup(@RequestBody @Validated ImportGroupReq req) {
         return imGroupService.importGroup(req);
     }
 
     @RequestMapping("/updateGroup")
-    public ResponseVO<?> update(@RequestBody @Validated UpdateGroupReq req)  {
+    public ResponseVO<?> update(@RequestBody @Validated UpdateGroupReq req) {
         return imGroupService.updateGroupInfo(req);
+    }
+
+    @RequestMapping("/createGroup")
+    public ResponseVO<?> createGroup(@RequestBody @Validated CreateGroupReq req) {
+        return imGroupService.createGroup(req);
+    }
+
+    @RequestMapping("/getGroupInfo")
+    public ResponseVO<?> getGroupInfo(@RequestBody @Validated GetGroupReq req) {
+        return imGroupService.getGroupInfo(req);
+    }
+
+    @RequestMapping("/getJoinedGroup")
+    public ResponseVO<?> getJoinedGroup(@RequestBody @Validated GetJoinedGroupReq req) {
+        return imGroupService.getJoinedGroup(req);
+    }
+
+    @RequestMapping("/destroyGroup")
+    public ResponseVO<?> destroyGroup(@RequestBody @Validated DestroyGroupReq req) {
+        return imGroupService.destroyGroup(req);
+    }
+
+    @RequestMapping("/transferGroup")
+    public ResponseVO<?> transferGroup(@RequestBody @Validated TransferGroupReq req) {
+        return imGroupService.transferGroup(req);
     }
 
     @RequestMapping("/importGroupMember")
@@ -38,28 +63,18 @@ public class ImGroupController {
         return imGroupService.importGroupMember(req);
     }
 
-    @RequestMapping("/createGroup")
-    public ResponseVO<?> createGroup(@RequestBody @Validated CreateGroupReq req)  {
-        return imGroupService.createGroup(req);
+    @RequestMapping("/addGroupMember")
+    public ResponseVO<?> addGroupMember(@RequestBody @Validated AddGroupMemberReq req) {
+        return imGroupService.addGroupMember(req);
     }
 
-    @RequestMapping("/getGroupInfo")
-    public ResponseVO<?> getGroupInfo(@RequestBody @Validated GetGroupReq req)  {
-        return imGroupService.getGroupInfo(req);
+    @RequestMapping("/removeGroupMember")
+    public ResponseVO<?> removeGroupMember(@RequestBody @Validated RemoveGroupMemberReq req)  {
+        return imGroupService.removeGroupMember(req);
     }
 
-    @RequestMapping("/getJoinedGroup")
-    public ResponseVO<?> getJoinedGroup(@RequestBody @Validated GetJoinedGroupReq req)  {
-        return imGroupService.getJoinedGroup(req);
-    }
-
-    @RequestMapping("/destroyGroup")
-    public ResponseVO<?> destroyGroup(@RequestBody @Validated DestroyGroupReq req)  {
-        return imGroupService.destroyGroup(req);
-    }
-
-    @RequestMapping("/transferGroup")
-    public ResponseVO<?> transferGroup(@RequestBody @Validated TransferGroupReq req)  {
-        return imGroupService.transferGroup(req);
+    @RequestMapping("/updateGroupMember")
+    public ResponseVO<?> updateGroupMember(@RequestBody @Validated UpdateGroupMemberReq req)  {
+        return imGroupService.updateGroupMember(req);
     }
 }
