@@ -1,7 +1,6 @@
 package com.zinan.im.service.friendship.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zinan.im.common.ResponseVO;
 import com.zinan.im.common.enums.DelFlagEnum;
 import com.zinan.im.common.enums.FriendshipErrorCode;
@@ -50,11 +49,11 @@ public class ImFriendshipGroupServiceImpl implements ImFriendshipGroupService {
         int delFlag = DelFlagEnum.NORMAL.getCode();
         List<String> toIds = req.getToIds();
 
-        QueryWrapper<ImFriendshipGroupEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("app_id", appId);
-        queryWrapper.eq("group_name", groupName);
-        queryWrapper.eq("from_id", fromId);
-        queryWrapper.eq("del_flag", delFlag);
+        LambdaQueryWrapper<ImFriendshipGroupEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ImFriendshipGroupEntity::getAppId, appId);
+        queryWrapper.eq(ImFriendshipGroupEntity::getGroupName, groupName);
+        queryWrapper.eq(ImFriendshipGroupEntity::getFromId, fromId);
+        queryWrapper.eq(ImFriendshipGroupEntity::getDelFlag, delFlag);
 
         ImFriendshipGroupEntity entity = imFriendshipGroupMapper.selectOne(queryWrapper);
         if (entity != null) {
@@ -117,11 +116,11 @@ public class ImFriendshipGroupServiceImpl implements ImFriendshipGroupService {
 
     @Override
     public ResponseVO<?> getGroup(CheckFriendshipGroupMemberReq req) {
-        QueryWrapper<ImFriendshipGroupEntity> query = new QueryWrapper<>();
-        query.eq("group_name", req.getGroupName());
-        query.eq("app_id", req.getAppId());
-        query.eq("from_id", req.getFromId());
-        query.eq("del_flag", DelFlagEnum.NORMAL.getCode());
+        LambdaQueryWrapper<ImFriendshipGroupEntity> query = new LambdaQueryWrapper<>();
+        query.eq(ImFriendshipGroupEntity::getGroupName, req.getGroupName());
+        query.eq(ImFriendshipGroupEntity::getAppId, req.getAppId());
+        query.eq(ImFriendshipGroupEntity::getFromId, req.getFromId());
+        query.eq(ImFriendshipGroupEntity::getDelFlag, DelFlagEnum.NORMAL.getCode());
 
         ImFriendshipGroupEntity entity = imFriendshipGroupMapper.selectOne(query);
         if (entity == null) {
@@ -198,8 +197,8 @@ public class ImFriendshipGroupServiceImpl implements ImFriendshipGroupService {
 
     @Override
     public ResponseVO<?> delAllGroupMember(Long groupId) {
-        QueryWrapper<ImFriendShipGroupMemberEntity> query = new QueryWrapper<>();
-        query.eq("group_id", groupId);
+        LambdaQueryWrapper<ImFriendShipGroupMemberEntity> query = new LambdaQueryWrapper<>();
+        query.eq(ImFriendShipGroupMemberEntity::getGroupId, groupId);
         int delete = imFriendShipGroupMemberMapper.delete(query);
         if (delete != 1) {
             return ResponseVO.errorResponse(FriendshipErrorCode.FRIEND_SHIP_GROUP_MEMBER_DELETE_ERROR);
@@ -208,9 +207,9 @@ public class ImFriendshipGroupServiceImpl implements ImFriendshipGroupService {
     }
 
     public int deleteGroupMember(Long groupId, String toId) {
-        QueryWrapper<ImFriendShipGroupMemberEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("group_id", groupId);
-        queryWrapper.eq("to_id", toId);
+        LambdaQueryWrapper<ImFriendShipGroupMemberEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ImFriendShipGroupMemberEntity::getGroupId, groupId);
+        queryWrapper.eq(ImFriendShipGroupMemberEntity::getToId, toId);
 
         return imFriendShipGroupMemberMapper.delete(queryWrapper);
     }

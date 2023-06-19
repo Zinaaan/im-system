@@ -1,5 +1,6 @@
 package com.zinan.im.service.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zinan.im.common.ResponseVO;
 import com.zinan.im.common.enums.DelFlagEnum;
@@ -74,10 +75,10 @@ public class ImUserServiceImpl implements ImUserService {
 
     @Override
     public ResponseVO<?> getUserInfo(GetUserInfoReq req) {
-        QueryWrapper<ImUserDataEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("app_id", req.getAppId());
-        queryWrapper.in("user_id", req.getUserIds());
-        queryWrapper.eq("del_flag", DelFlagEnum.NORMAL.getCode());
+        LambdaQueryWrapper<ImUserDataEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ImUserDataEntity::getAppId, req.getAppId());
+        queryWrapper.in(ImUserDataEntity::getUserId, req.getUserIds());
+        queryWrapper.eq(ImUserDataEntity::getDelFlag, DelFlagEnum.NORMAL.getCode());
 
         List<ImUserDataEntity> userDataEntities = imUserDataMapper.selectList(queryWrapper);
         Map<String, ImUserDataEntity> map = userDataEntities.stream().collect(Collectors.toMap(ImUserDataEntity::getUserId, Function.identity()));
@@ -92,10 +93,10 @@ public class ImUserServiceImpl implements ImUserService {
 
     @Override
     public ResponseVO<?> getSingleUserInfo(UserId req) {
-        QueryWrapper<ImUserDataEntity> objectQueryWrapper = new QueryWrapper<>();
-        objectQueryWrapper.eq("app_id", req.getAppId());
-        objectQueryWrapper.eq("user_id", req.getUserId());
-        objectQueryWrapper.eq("del_flag", DelFlagEnum.NORMAL.getCode());
+        LambdaQueryWrapper<ImUserDataEntity> objectQueryWrapper = new LambdaQueryWrapper<>();
+        objectQueryWrapper.eq(ImUserDataEntity::getAppId, req.getAppId());
+        objectQueryWrapper.eq(ImUserDataEntity::getUserId, req.getUserId());
+        objectQueryWrapper.eq(ImUserDataEntity::getDelFlag, DelFlagEnum.NORMAL.getCode());
 
         ImUserDataEntity entity = imUserDataMapper.selectOne(objectQueryWrapper);
         if (entity == null) {
@@ -114,10 +115,10 @@ public class ImUserServiceImpl implements ImUserService {
         List<String> errorIdList = new ArrayList<>();
 
         req.getUserId().forEach(userId -> {
-            QueryWrapper<ImUserDataEntity> wrapper = new QueryWrapper<>();
-            wrapper.eq("app_id", req.getAppId());
-            wrapper.eq("user_id", userId);
-            wrapper.eq("del_flag", DelFlagEnum.NORMAL.getCode());
+            LambdaQueryWrapper<ImUserDataEntity> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(ImUserDataEntity::getAppId, req.getAppId());
+            wrapper.eq(ImUserDataEntity::getUserId, userId);
+            wrapper.eq(ImUserDataEntity::getDelFlag, DelFlagEnum.NORMAL.getCode());
             int update;
             try {
                 update = imUserDataMapper.update(entity, wrapper);
@@ -141,10 +142,10 @@ public class ImUserServiceImpl implements ImUserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseVO<?> modifyUserInfo(ModifyUserInfoReq req) {
-        QueryWrapper<ImUserDataEntity> query = new QueryWrapper<>();
-        query.eq("app_id", req.getAppId());
-        query.eq("user_id", req.getUserId());
-        query.eq("del_flag", DelFlagEnum.NORMAL.getCode());
+        LambdaQueryWrapper<ImUserDataEntity> query = new LambdaQueryWrapper<>();
+        query.eq(ImUserDataEntity::getAppId, req.getAppId());
+        query.eq(ImUserDataEntity::getUserId, req.getUserId());
+        query.eq(ImUserDataEntity::getDelFlag, DelFlagEnum.NORMAL.getCode());
 
         ImUserDataEntity user = imUserDataMapper.selectOne(query);
         if (user == null) {
@@ -157,11 +158,7 @@ public class ImUserServiceImpl implements ImUserService {
         updateEntity.setAppId(null);
         updateEntity.setUserId(null);
 
-        int update = imUserDataMapper.update(updateEntity, query);
-//        if(update == 1){
-//            UserModifyPack pack = new UserModifyPack();
-//            BeanUtils.copyProperties(req,pack);
-//        }
+        imUserDataMapper.update(updateEntity, query);
 
         return ResponseVO.successResponse();
     }

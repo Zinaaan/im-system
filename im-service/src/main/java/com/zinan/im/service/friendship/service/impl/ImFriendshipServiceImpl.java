@@ -1,6 +1,6 @@
 package com.zinan.im.service.friendship.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zinan.im.common.ResponseVO;
 import com.zinan.im.common.enums.*;
@@ -107,10 +107,10 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
         }
 
         // Verification
-        QueryWrapper<ImFriendshipEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("app_id", req.getAppId());
-        queryWrapper.eq("from_id", req.getFromId());
-        queryWrapper.eq("to_id", req.getToItem().getToId());
+        LambdaQueryWrapper<ImFriendshipEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ImFriendshipEntity::getAppId, req.getAppId());
+        queryWrapper.eq(ImFriendshipEntity::getFromId, req.getFromId());
+        queryWrapper.eq(ImFriendshipEntity::getToId, req.getToItem().getToId());
         ImFriendshipEntity fromItem = imFriendshipMapper.selectOne(queryWrapper);
         if (fromItem != null && fromItem.getStatus() == FriendshipStatusEnum.FRIEND_STATUS_NORMAL.getCode()) {
             return ResponseVO.successResponse(FriendshipErrorCode.TO_IS_YOUR_FRIEND);
@@ -149,10 +149,10 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
     @Override
     public ResponseVO<?> deleteFriend(DeleteFriendReq req) {
 
-        QueryWrapper<ImFriendshipEntity> deleteWrapper = new QueryWrapper<>();
-        deleteWrapper.eq("app_id", req.getAppId());
-        deleteWrapper.eq("from_id", req.getFromId());
-        deleteWrapper.eq("to_id", req.getToId());
+        LambdaQueryWrapper<ImFriendshipEntity> deleteWrapper = new LambdaQueryWrapper<>();
+        deleteWrapper.eq(ImFriendshipEntity::getAppId, req.getAppId());
+        deleteWrapper.eq(ImFriendshipEntity::getFromId, req.getFromId());
+        deleteWrapper.eq(ImFriendshipEntity::getToId, req.getToId());
 
         // Checking if the current record exists
         ImFriendshipEntity fromItem = imFriendshipMapper.selectOne(deleteWrapper);
@@ -174,10 +174,10 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
 
     @Override
     public ResponseVO<?> deleteAllFriend(DeleteFriendReq req) {
-        QueryWrapper<ImFriendshipEntity> deleteAllWrapper = new QueryWrapper<>();
-        deleteAllWrapper.eq("app_id", req.getAppId());
-        deleteAllWrapper.eq("from_id", req.getFromId());
-        deleteAllWrapper.eq("status", FriendshipStatusEnum.FRIEND_STATUS_NORMAL.getCode());
+        LambdaQueryWrapper<ImFriendshipEntity> deleteAllWrapper = new LambdaQueryWrapper<>();
+        deleteAllWrapper.eq(ImFriendshipEntity::getAppId, req.getAppId());
+        deleteAllWrapper.eq(ImFriendshipEntity::getFromId, req.getFromId());
+        deleteAllWrapper.eq(ImFriendshipEntity::getStatus, FriendshipStatusEnum.FRIEND_STATUS_NORMAL.getCode());
 
         ImFriendshipEntity deleteAll = new ImFriendshipEntity();
         deleteAll.setStatus(FriendshipStatusEnum.FRIEND_STATUS_DELETE.getCode());
@@ -189,10 +189,10 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
     @Override
     public ResponseVO<?> getFriendship(GetRelationReq req) {
 
-        QueryWrapper<ImFriendshipEntity> friendWrapper = new QueryWrapper<>();
-        friendWrapper.eq("app_id", req.getAppId());
-        friendWrapper.eq("from_id", req.getFromId());
-        friendWrapper.eq("to_id", req.getToId());
+        LambdaQueryWrapper<ImFriendshipEntity> friendWrapper = new LambdaQueryWrapper<>();
+        friendWrapper.eq(ImFriendshipEntity::getAppId, req.getAppId());
+        friendWrapper.eq(ImFriendshipEntity::getFromId, req.getFromId());
+        friendWrapper.eq(ImFriendshipEntity::getToId, req.getToId());
 
         ImFriendshipEntity friendEntity = imFriendshipMapper.selectOne(friendWrapper);
         if (friendEntity == null) {
@@ -205,9 +205,9 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
     @Override
     public ResponseVO<?> getAllFriendship(GetAllFriendshipReq req) {
 
-        QueryWrapper<ImFriendshipEntity> allFriendWrapper = new QueryWrapper<>();
-        allFriendWrapper.eq("app_id", req.getAppId());
-        allFriendWrapper.eq("from_id", req.getFromId());
+        LambdaQueryWrapper<ImFriendshipEntity> allFriendWrapper = new LambdaQueryWrapper<>();
+        allFriendWrapper.eq(ImFriendshipEntity::getAppId, req.getAppId());
+        allFriendWrapper.eq(ImFriendshipEntity::getFromId, req.getFromId());
 
         return ResponseVO.successResponse(imFriendshipMapper.selectList(allFriendWrapper));
     }
@@ -252,10 +252,10 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
             return toInfo;
         }
 
-        QueryWrapper<ImFriendshipEntity> addWrapper = new QueryWrapper<>();
-        addWrapper.eq("app_id", req.getAppId());
-        addWrapper.eq("from_id", req.getFromId());
-        addWrapper.eq("to_id", req.getToId());
+        LambdaQueryWrapper<ImFriendshipEntity> addWrapper = new LambdaQueryWrapper<>();
+        addWrapper.eq(ImFriendshipEntity::getAppId, req.getAppId());
+        addWrapper.eq(ImFriendshipEntity::getFromId, req.getFromId());
+        addWrapper.eq(ImFriendshipEntity::getToId, req.getToId());
 
         ImFriendshipEntity addEntity = imFriendshipMapper.selectOne(addWrapper);
         if (addEntity == null) {
@@ -288,10 +288,10 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
     @Override
     public ResponseVO<?> deleteFromBlackList(DeleteBlackReq req) {
 
-        QueryWrapper<ImFriendshipEntity> deleteWrapper = new QueryWrapper<>();
-        deleteWrapper.eq("app_id", req.getAppId());
-        deleteWrapper.eq("from_id", req.getFromId());
-        deleteWrapper.eq("to_id", req.getToId());
+        LambdaQueryWrapper<ImFriendshipEntity> deleteWrapper = new LambdaQueryWrapper<>();
+        deleteWrapper.eq(ImFriendshipEntity::getAppId, req.getAppId());
+        deleteWrapper.eq(ImFriendshipEntity::getFromId, req.getFromId());
+        deleteWrapper.eq(ImFriendshipEntity::getToId, req.getToId());
 
         // Checking if the current record exists
         ImFriendshipEntity fromItem = imFriendshipMapper.selectOne(deleteWrapper);
@@ -332,10 +332,10 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
     @Transactional(rollbackFor = Exception.class)
     public ResponseVO<?> addFriendshipRequest(AddFriendReq req) {
 
-        QueryWrapper<ImFriendshipRequestEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("app_id", req.getAppId());
-        queryWrapper.eq("from_id", req.getFromId());
-        queryWrapper.eq("to_id", req.getToItem().getToId());
+        LambdaQueryWrapper<ImFriendshipRequestEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ImFriendshipRequestEntity::getAppId, req.getAppId());
+        queryWrapper.eq(ImFriendshipRequestEntity::getFromId, req.getFromId());
+        queryWrapper.eq(ImFriendshipRequestEntity::getToId, req.getToItem().getToId());
 
         ImFriendshipRequestEntity entity = imFriendshipRequestMapper.selectOne(queryWrapper);
         if (entity == null) {
@@ -377,9 +377,9 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
     @Transactional(rollbackFor = Exception.class)
     public ResponseVO<?> approveFriendRequest(ApproverFriendRequestReq req) {
 
-        QueryWrapper<ImFriendshipRequestEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("app_id", req.getAppId());
-        queryWrapper.eq("id", req.getId());
+        LambdaQueryWrapper<ImFriendshipRequestEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ImFriendshipRequestEntity::getAppId, req.getAppId());
+        queryWrapper.eq(ImFriendshipRequestEntity::getId, req.getId());
 
         ImFriendshipRequestEntity entity = imFriendshipRequestMapper.selectOne(queryWrapper);
         if (entity == null) {
@@ -425,9 +425,9 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
     @Override
     public ResponseVO<?> getFriendshipRequest(GetFriendshipRequestReq req) {
 
-        QueryWrapper<ImFriendshipRequestEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("app_id", req.getAppId());
-        queryWrapper.eq("to_id", req.getFromId());
+        LambdaQueryWrapper<ImFriendshipRequestEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ImFriendshipRequestEntity::getAppId, req.getAppId());
+        queryWrapper.eq(ImFriendshipRequestEntity::getToId, req.getFromId());
         List<ImFriendshipRequestEntity> requestList = imFriendshipRequestMapper.selectList(queryWrapper);
 
         return ResponseVO.successResponse(requestList);
@@ -436,9 +436,9 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
     @Override
     public ResponseVO<?> readFriendshipRequest(ReadFriendshipRequestReq req) {
 
-        QueryWrapper<ImFriendshipRequestEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("app_id", req.getAppId());
-        queryWrapper.eq("to_id", req.getFromId());
+        LambdaQueryWrapper<ImFriendshipRequestEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ImFriendshipRequestEntity::getAppId, req.getAppId());
+        queryWrapper.eq(ImFriendshipRequestEntity::getToId, req.getFromId());
 
         ImFriendshipRequestEntity update = new ImFriendshipRequestEntity();
         update.setReadStatus(1);
@@ -451,10 +451,10 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
     public ResponseVO<?> doAddFriend(AddFriendReq req) {
         // Friend table adding two records, A-B and B-A
         // A-B
-        QueryWrapper<ImFriendshipEntity> fromWrapper = new QueryWrapper<>();
-        fromWrapper.eq("app_id", req.getAppId());
-        fromWrapper.eq("from_id", req.getFromId());
-        fromWrapper.eq("to_id", req.getToItem().getToId());
+        LambdaQueryWrapper<ImFriendshipEntity> fromWrapper = new LambdaQueryWrapper<>();
+        fromWrapper.eq(ImFriendshipEntity::getAppId, req.getAppId());
+        fromWrapper.eq(ImFriendshipEntity::getFromId, req.getFromId());
+        fromWrapper.eq(ImFriendshipEntity::getToId, req.getToItem().getToId());
         // Checking if the current record exists
         ImFriendshipEntity fromItem = imFriendshipMapper.selectOne(fromWrapper);
         if (fromItem == null) {
@@ -497,10 +497,10 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
         }
 
         // B-A
-        QueryWrapper<ImFriendshipEntity> toWrapper = new QueryWrapper<>();
-        toWrapper.eq("app_id", req.getAppId());
-        toWrapper.eq("from_id", req.getToItem().getToId());
-        toWrapper.eq("to_id", req.getFromId());
+        LambdaQueryWrapper<ImFriendshipEntity> toWrapper = new LambdaQueryWrapper<>();
+        toWrapper.eq(ImFriendshipEntity::getAppId, req.getAppId());
+        toWrapper.eq(ImFriendshipEntity::getFromId, req.getToItem().getToId());
+        toWrapper.eq(ImFriendshipEntity::getToId, req.getFromId());
         ImFriendshipEntity toItem = imFriendshipMapper.selectOne(toWrapper);
         if (toItem == null) {
             // Adding this person to your friend
