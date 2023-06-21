@@ -2,11 +2,13 @@
 Customize transmission protocol for Instant Messaging system
 
 ## Design
-**Request Header** `command, version, clientType, parseType, imeiLength, appId, bodyLength`
+**Request Header** `command, version, clientType, messageType, appId, imeiLength, bodyLength`
 
 **imeiBody** imei content
 
 **Request Body** Actual data content
+
+Each length of value in **Request header** is 4 bits (Assume each value is Integer), so the total size is **28 bits**
 
 ## Request Header Description
 
@@ -16,7 +18,7 @@ Customize transmission protocol for Instant Messaging system
 
 **clientType:** Client type like IOS, Android, PC(Windows, Mac), Web, etc.
 
-**parseType:** JSON, Protobuf.
+**messageType:** JSON, Protobuf.
 
 **imeiLength:** The length of Imei number per client
 

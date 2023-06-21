@@ -2,14 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>im-system</artifactId>
         <groupId>com.zinan</groupId>
         <version>1.0.0</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>im-tcp-gateway</artifactId>
+    <artifactId>im-codec</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>im-codec</name>
+    <description>codec project</description>
 
     <dependencies>
         <dependency>
@@ -18,21 +20,19 @@
             <version>4.1.35.Final</version>
         </dependency>
 
+        <!-- fast json -->
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.51</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.zinan</groupId>
-            <artifactId>im-codec</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-
+        <!-- common -->
         <dependency>
             <groupId>com.zinan</groupId>
             <artifactId>im-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
+
 </project>
