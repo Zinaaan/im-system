@@ -8,7 +8,7 @@ Customize transmission protocol for Instant Messaging system
 
 **Request Body** Actual data content
 
-### Request Header Description
+## Request Header Description
 
 **command:** Request type like GET, POST, PUT, DELETE, etc.
 
