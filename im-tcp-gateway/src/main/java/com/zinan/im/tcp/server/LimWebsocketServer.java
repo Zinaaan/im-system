@@ -27,16 +27,12 @@ public class LimWebsocketServer {
 
     private final BootstrapConfig.TcpConfig tcpConfig;
 
-    EventLoopGroup bossGroup;
-
-    EventLoopGroup workGroup;
-
-    ServerBootstrap bootstrap;
+    private final ServerBootstrap bootstrap;
 
     public LimWebsocketServer(BootstrapConfig.TcpConfig tcpConfig) {
         this.tcpConfig = tcpConfig;
-        bossGroup = new NioEventLoopGroup(tcpConfig.getBossThreadSize());
-        workGroup = new NioEventLoopGroup(tcpConfig.getWorkThreadSize());
+        EventLoopGroup bossGroup = new NioEventLoopGroup(tcpConfig.getBossThreadSize());
+        EventLoopGroup workGroup = new NioEventLoopGroup(tcpConfig.getWorkThreadSize());
 
         bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workGroup)
