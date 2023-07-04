@@ -1,5 +1,29 @@
-# im-system
+im-system
+===========================
 Instant Messaging system implemented by Netty and Spring-boot
+
+## Catalog
+* ### im-system
+    * [im-codec](#im-codec)
+    * [im-common](#im-common)
+    * [im-message-store](#im-message-store)
+    * [im-service](#im-service)
+    * [im-tcp-gateway](#im-tcp-gateway)
+
+### [im-codec](./im-codec)
+---
+
+### [im-common](./im-common)
+***
+
+### [im-message-store](./im-message-store)
+***
+
+### [im-service](./im-service)
+***
+
+### [im-tcp-gateway](./im-tcp-gateway)
+***
 
 ## Process of checking friendship
 The request data: 
