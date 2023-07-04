@@ -11,7 +11,8 @@ Instant Messaging system implemented by Netty and Spring-boot
     * [im-tcp-gateway](#im-tcp-gateway)
 
 ### [im-codec](./im-codec)
----
+Customize transmission protocol for Instant Messaging system
+***
 
 ### [im-common](./im-common)
 ***
