@@ -25,6 +25,10 @@ Instant Messaging system implemented by Netty and Spring-boot
 ### [im-tcp-gateway](./im-tcp-gateway)
 ***
 
+### Useful commands
+Redis startup in windows(locate to the redis directory):
+`redis-server.exe redis.windows.conf`
+
 ## Process of checking friendship
 The request data: 
 `{
