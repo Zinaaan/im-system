@@ -2,6 +2,9 @@ package com.zinan.im.service.friendship.service;
 
 import com.zinan.im.common.ResponseVO;
 import com.zinan.im.service.friendship.model.req.*;
+import com.zinan.im.service.friendship.model.resp.CheckFriendshipResp;
+
+import java.util.List;
 
 /**
  * @author lzn
@@ -30,7 +33,7 @@ public interface ImFriendshipService {
 
     ResponseVO<?> deleteFromBlackList(DeleteBlackReq req);
 
-    ResponseVO<?> checkIfInBlackList(CheckFriendshipReq req);
+    ResponseVO<List<CheckFriendshipResp>> checkIfInBlackList(CheckFriendshipReq req);
 
     ResponseVO<?> addFriendshipRequest(AddFriendReq req);
 

@@ -38,23 +38,23 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Exception processing of parameter verification
+     * Constraint violation exception processing for parameter verification
      *
      * @param ex: ConstraintViolationException
      * @return ResponseVO
      */
     @ExceptionHandler(value = ConstraintViolationException.class)
     @ResponseBody
-    public Object handleMethodArgumentNotValidException(ConstraintViolationException ex) {
+    public ResponseVO<?> handleConstraintViolationException(ConstraintViolationException ex) {
 
         Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
         ResponseVO<?> resultBean = new ResponseVO<>();
         resultBean.setCode(BaseErrorCode.PARAMETER_ERROR.getCode());
         for (ConstraintViolation<?> constraintViolation : constraintViolations) {
             PathImpl pathImpl = (PathImpl) constraintViolation.getPropertyPath();
-            // 读取参数字段，constraintViolation.getMessage() 读取验证注解中的message值
+            // Read the parameters，constraintViolation.getMessage() -> got the value of message for the constraintViolation
             String paramName = pathImpl.getLeafNode().getName();
-            String message = "参数{".concat(paramName).concat("}").concat(constraintViolation.getMessage());
+            String message = "Parameter{".concat(paramName).concat("}").concat(constraintViolation.getMessage());
             resultBean.setMsg(message);
 
             return resultBean;
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = ApplicationException.class)
     @ResponseBody
-    public Object applicationExceptionHandler(ApplicationException e) {
+    public ResponseVO<?> handleApplicationExceptionHandler(ApplicationException e) {
         ResponseVO<?> resultBean = new ResponseVO<>();
         resultBean.setCode(e.getCode());
         resultBean.setMsg(e.getError());
@@ -79,18 +79,18 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Exception processing of parameter verification
+     * Bind exception processing for parameter verification
      *
      * @param ex: BindException
      * @return ResponseVO
      */
     @ExceptionHandler(value = BindException.class)
     @ResponseBody
-    public Object handleException2(BindException ex) {
+    public ResponseVO<?> handleBindException(BindException ex) {
         FieldError err = ex.getFieldError();
         String message = "";
         if (err != null) {
-            message = "参数{".concat(err.getField()).concat("}").concat(err.getDefaultMessage() == null ? "" : err.getDefaultMessage());
+            message = "Parameter{".concat(err.getField()).concat("}").concat(err.getDefaultMessage() == null ? "" : err.getDefaultMessage());
         }
         ResponseVO<?> resultBean = new ResponseVO<>();
         resultBean.setCode(BaseErrorCode.PARAMETER_ERROR.getCode());
@@ -99,14 +99,14 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * json format
+     * Method arguments Violation Exception processing for parameter verification
      *
      * @param ex: MethodArgumentNotValidException
      * @return ResponseVO
      */
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     @ResponseBody
-    public Object handleException1(MethodArgumentNotValidException ex) {
+    public ResponseVO<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         StringBuilder errorMsg = new StringBuilder();
         BindingResult re = ex.getBindingResult();
         for (ObjectError error : re.getAllErrors()) {

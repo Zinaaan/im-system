@@ -308,7 +308,7 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
     }
 
     @Override
-    public ResponseVO<?> checkIfInBlackList(CheckFriendshipReq req) {
+    public ResponseVO<List<CheckFriendshipResp>> checkIfInBlackList(CheckFriendshipReq req) {
 
         List<CheckFriendshipResp> respList;
         // one-side verification
@@ -388,7 +388,7 @@ public class ImFriendshipServiceImpl implements ImFriendshipService {
 
         // Each user only can approve the friendship request which send to themselves
         if (!entity.getToId().equals(req.getOperator())) {
-            throw new ApplicationException(FriendshipErrorCode.NOT_APPROVER_OTHER_MAN_REQUEST);
+            return ResponseVO.errorResponse(FriendshipErrorCode.NOT_APPROVER_OTHER_MAN_REQUEST);
         }
 
         // Update request status

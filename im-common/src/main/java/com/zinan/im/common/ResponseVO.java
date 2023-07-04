@@ -23,11 +23,11 @@ public class ResponseVO<T> {
 
     private T data;
 
-    public static ResponseVO<?> successResponse(Object data) {
+    public static <T> ResponseVO<T> successResponse(T data) {
         return new ResponseVO<>(BaseErrorCode.SUCCESS.getCode(), BaseErrorCode.SUCCESS.getError(), data);
     }
 
-    public static ResponseVO<?> successResponse() {
+    public static <T> ResponseVO<T> successResponse() {
         return new ResponseVO<>(BaseErrorCode.SUCCESS.getCode(), BaseErrorCode.SUCCESS.getError());
     }
 

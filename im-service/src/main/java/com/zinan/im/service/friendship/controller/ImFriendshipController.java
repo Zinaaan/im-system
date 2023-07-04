@@ -2,11 +2,14 @@ package com.zinan.im.service.friendship.controller;
 
 import com.zinan.im.common.ResponseVO;
 import com.zinan.im.service.friendship.model.req.*;
+import com.zinan.im.service.friendship.model.resp.CheckFriendshipResp;
 import com.zinan.im.service.friendship.service.ImFriendshipService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author lzn
@@ -74,7 +77,7 @@ public class ImFriendshipController {
     }
 
     @RequestMapping("/checkIfInBlackList")
-    public ResponseVO<?> checkIfInBlackList(@RequestBody @Validated CheckFriendshipReq req) {
+    public ResponseVO<List<CheckFriendshipResp>> checkIfInBlackList(@RequestBody @Validated CheckFriendshipReq req) {
         return imFriendshipService.checkIfInBlackList(req);
     }
 
