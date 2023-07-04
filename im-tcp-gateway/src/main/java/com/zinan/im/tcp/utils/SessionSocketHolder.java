@@ -1,5 +1,6 @@
 package com.zinan.im.tcp.utils;
 
+import com.zinan.im.common.model.UserClientDto;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.util.Map;
@@ -12,13 +13,25 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SessionSocketHolder {
 
-    private static final Map<String, NioSocketChannel> CHANNELS = new ConcurrentHashMap<>();
+    private static final Map<UserClientDto, NioSocketChannel> CHANNELS = new ConcurrentHashMap<>();
 
-    public static void put(String userId, NioSocketChannel socketChannel) {
-        CHANNELS.put(userId, socketChannel);
+    public static void put(UserClientDto clientDto, NioSocketChannel socketChannel) {
+        CHANNELS.put(clientDto, socketChannel);
     }
 
-    public static NioSocketChannel get(String userId) {
-        return CHANNELS.get(userId);
+    public static NioSocketChannel get(UserClientDto clientDto) {
+        return CHANNELS.get(clientDto);
+    }
+
+    public static boolean containsKey(UserClientDto clientDto) {
+       return CHANNELS.containsKey(clientDto);
+    }
+
+    public static void removeByKey(UserClientDto clientDto) {
+        CHANNELS.remove(clientDto);
+    }
+
+    public static void removeByValue(NioSocketChannel socketChannel) {
+        CHANNELS.entrySet().stream().filter(channels -> channels.getValue() == socketChannel).forEach(channels -> CHANNELS.remove(channels.getKey()));
     }
 }

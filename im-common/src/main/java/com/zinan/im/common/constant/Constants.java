@@ -7,7 +7,19 @@ package com.zinan.im.common.constant;
  */
 public class Constants {
 
-    public static class RedisConstants{
+    /**
+     * User id for channels
+     */
+    public static final String USER_ID = "userId";
+
+    /**
+     * App id for channels
+     */
+    public static final String APP_ID = "appId";
+
+    public static final String CLIENT_TYPE = "clientType";
+
+    public static class RedisConstants {
 
         /**
          * User session, format -> appId + USER_SESSION_CONSTANTS + userId

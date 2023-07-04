@@ -8,6 +8,7 @@ import com.zinan.im.codec.protocols.Message;
 import com.zinan.im.common.constant.Constants;
 import com.zinan.im.common.enums.ImConnectStatusEnum;
 import com.zinan.im.common.enums.command.SystemCommand;
+import com.zinan.im.common.model.UserClientDto;
 import com.zinan.im.common.model.UserSession;
 import com.zinan.im.tcp.redis.RedisManager;
 import com.zinan.im.tcp.utils.SessionSocketHolder;
@@ -34,26 +35,50 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
         // Got request type
         Integer command = message.getMessageHeader().getCommand();
 
+        // Log in
         if (SystemCommand.LOGIN.getCommand() == command) {
 
             // Set up the login user id
             LoginPack loginPack = JSON.parseObject(JSONObject.toJSONString(message.getMessagePack()), new TypeReference<LoginPack>() {
             }.getType());
             String userId = loginPack.getUserId();
-            context.channel().attr(AttributeKey.valueOf("userId")).set(userId);
+            Integer appId = message.getMessageHeader().getAppId();
+            Integer clientType = message.getMessageHeader().getClientType();
+            context.channel().attr(AttributeKey.valueOf(Constants.USER_ID)).set(userId);
+            context.channel().attr(AttributeKey.valueOf(Constants.APP_ID)).set(appId);
+            context.channel().attr(AttributeKey.valueOf(Constants.CLIENT_TYPE)).set(clientType);
 
             // Store the current channel via Redis -> Hash table
             UserSession userSession = new UserSession();
-            userSession.setAppId(message.getMessageHeader().getAppId());
+            userSession.setAppId(appId);
             userSession.setUserId(userId);
-            userSession.setClientType(message.getMessageHeader().getClientType());
+            userSession.setClientType(clientType);
             userSession.setConnectionState(ImConnectStatusEnum.ONLINE_STATUS.getCode());
             RedissonClient redissonClient = RedisManager.getRedissonClient();
             // User session, format -> appId + USER_SESSION_CONSTANTS + userId
-            RMap<String, String> map = redissonClient.getMap(message.getMessageHeader().getAppId() + Constants.RedisConstants.USER_SESSION_CONSTANTS + userId);
+            RMap<String, String> map = redissonClient.getMap(appId + Constants.RedisConstants.USER_SESSION_CONSTANTS + userId);
             map.put(String.valueOf(message.getMessageHeader().getClientType()), JSONObject.toJSONString(userSession));
 
-            SessionSocketHolder.put(userId, (NioSocketChannel) context.channel());
+            // Store user login session locally
+            UserClientDto userClientDto = new UserClientDto(userId, appId, clientType);
+            SessionSocketHolder.put(userClientDto, (NioSocketChannel) context.channel());
+        }
+        // Log out
+        else if (SystemCommand.LOGOUT.getCommand() == command) {
+            // Remove local session
+            String userId = (String) context.channel().attr(AttributeKey.valueOf(Constants.USER_ID)).get();
+            Integer appId = (Integer) context.channel().attr(AttributeKey.valueOf(Constants.APP_ID)).get();
+            Integer clientType = (Integer) context.channel().attr(AttributeKey.valueOf(Constants.CLIENT_TYPE)).get();
+            UserClientDto userClientDto = new UserClientDto(userId, appId, clientType);
+            if (SessionSocketHolder.containsKey(userClientDto)) {
+                SessionSocketHolder.removeByKey(userClientDto);
+            }
+
+            // Remove redis session
+            RedissonClient redissonClient = RedisManager.getRedissonClient();
+            RMap<String, String> map = redissonClient.getMap(appId + Constants.RedisConstants.USER_SESSION_CONSTANTS + userId);
+            map.remove(String.valueOf(clientType));
+            context.channel().close();
         }
 
         System.out.println(message);
