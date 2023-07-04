@@ -24,6 +24,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.zinan</groupId>
             <artifactId>im-codec</artifactId>
             <version>0.0.1-SNAPSHOT</version>
