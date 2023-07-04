@@ -5,11 +5,14 @@ import lombok.Data;
 /**
  * @author lzn
  * @date 2023/06/21 16:18
- * @description
+ * @description Customized message header for message entity
  */
 @Data
 public class MessageHeader {
 
+    /**
+     * RequestType
+     */
     private Integer command;
     private Integer version;
     private Integer clientType ;

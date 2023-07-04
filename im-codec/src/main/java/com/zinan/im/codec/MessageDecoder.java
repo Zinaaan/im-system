@@ -63,7 +63,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
         if(messageType == 0x0){
             String bodyData = new String(bodyBytes);
             JSONObject body = (JSONObject) JSONObject.parse(bodyData);
-            message.setMessageData(body);
+            message.setMessagePack(body);
         }
 
         byteBuf.markReaderIndex();
