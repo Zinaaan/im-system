@@ -2,6 +2,7 @@ package com.zinan.im.tcp.server;
 
 import com.zinan.im.codec.MessageDecoder;
 import com.zinan.im.codec.config.BootstrapConfig;
+import com.zinan.im.tcp.handler.HeartBeatHandler;
 import com.zinan.im.tcp.handler.NettyServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -10,6 +11,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +46,14 @@ public class LimServer {
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
+                    protected void initChannel(SocketChannel socketChannel) {
                         socketChannel.pipeline().addLast(new MessageDecoder());
+                        /*
+                         * If read and write timeout events(IdleState.ALL_IDLE) is triggered,
+                         * the socket channel will invoke the #{userEventTriggered} event of the next handler(currently is HeartBeatHandler)
+                         */
+                        socketChannel.pipeline().addLast(new IdleStateHandler(0, 0, 10));
+                        socketChannel.pipeline().addLast(new HeartBeatHandler(tcpConfig.getHeartBeatTime()));
                         socketChannel.pipeline().addLast(new NettyServerHandler());
                     }
                 });

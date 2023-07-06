@@ -22,6 +22,7 @@ public class BootstrapConfig {
         private Integer websocketPort;
         private Integer bossThreadSize;
         private Integer workThreadSize;
+        private Long heartBeatTime;
         /**
          * Redis configurations
          */

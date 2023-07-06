@@ -111,7 +111,7 @@ public class ImFriendshipGroupServiceImpl implements ImFriendshipGroupService {
             }
         }
 
-        return null;
+        return ResponseVO.successResponse();
     }
 
     @Override

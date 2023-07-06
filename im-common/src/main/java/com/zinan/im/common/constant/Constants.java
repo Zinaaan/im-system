@@ -19,6 +19,8 @@ public class Constants {
 
     public static final String CLIENT_TYPE = "clientType";
 
+    public static final String READ_TIME = "readTime";
+
     public static class RedisConstants {
 
         /**
