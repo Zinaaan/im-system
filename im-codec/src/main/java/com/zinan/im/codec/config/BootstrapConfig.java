@@ -27,6 +27,7 @@ public class BootstrapConfig {
          * Redis configurations
          */
         private RedisConfig redis;
+        private Rabbitmq rabbitmq;
     }
 
     @Data
@@ -59,7 +60,6 @@ public class BootstrapConfig {
          */
         private Integer poolConnTimeout;
         /**
-         * 连接池大小
          * Size of the connection pool
          */
         private Integer poolSize;
@@ -75,9 +75,22 @@ public class BootstrapConfig {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RedisSingle {
-        /**
-         * 地址
-         */
         private String address;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Rabbitmq {
+        private String host;
+
+        private Integer port;
+
+        private String virtualHost;
+
+        private String userName;
+
+        private String password;
     }
 }

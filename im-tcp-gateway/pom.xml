@@ -28,6 +28,12 @@
             <artifactId>redisson</artifactId>
         </dependency>
 
+        <!-- rabbitmq -->
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.zinan</groupId>
             <artifactId>im-codec</artifactId>

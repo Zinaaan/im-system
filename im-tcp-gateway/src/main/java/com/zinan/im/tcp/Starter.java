@@ -1,9 +1,11 @@
 package com.zinan.im.tcp;
 
 import com.zinan.im.codec.config.BootstrapConfig;
+import com.zinan.im.tcp.receiver.MessageReceiver;
 import com.zinan.im.tcp.redis.RedisManager;
 import com.zinan.im.tcp.server.LimServer;
 import com.zinan.im.tcp.server.LimWebsocketServer;
+import com.zinan.im.tcp.utils.MqFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -33,6 +35,9 @@ public class Starter {
 
             // Initialize redis
             RedisManager.init(bootstrapConfig);
+            // Initialize Rabbit Mq
+            MqFactory.init(bootstrapConfig.getLim().getRabbitmq());
+            MessageReceiver.init();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
