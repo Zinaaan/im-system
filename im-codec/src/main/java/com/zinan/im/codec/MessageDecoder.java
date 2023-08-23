@@ -44,7 +44,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
         String imeData = new String(imeBytes);
 
         // Got body data
-        byte[] bodyBytes = new byte[imeLength];
+        byte[] bodyBytes = new byte[bodyLength];
         byteBuf.readBytes(bodyBytes);
 
         MessageHeader messageHeader = new MessageHeader();
