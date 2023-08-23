@@ -38,15 +38,14 @@ public class MessageDecoder extends ByteToMessageDecoder {
             return;
         }
 
-        // Got the ime data
+        // Got ime data
         byte[] imeBytes = new byte[imeLength];
         byteBuf.readBytes(imeBytes);
         String imeData = new String(imeBytes);
 
-        // Got the body data
+        // Got body data
         byte[] bodyBytes = new byte[imeLength];
         byteBuf.readBytes(bodyBytes);
-
 
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.setCommand(command);
