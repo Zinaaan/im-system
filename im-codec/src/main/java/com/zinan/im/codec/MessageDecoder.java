@@ -7,6 +7,15 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -15,6 +24,8 @@ import java.util.List;
  * @description Customized message decoder
  */
 public class MessageDecoder extends ByteToMessageDecoder {
+
+    String secretKey = "abcdeabcdeabcdea"; // 128-bit key
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
@@ -29,14 +40,21 @@ public class MessageDecoder extends ByteToMessageDecoder {
         int clientType = byteBuf.readInt();
         int messageType = byteBuf.readInt();
         int appId = byteBuf.readInt();
+        int pwdLength = byteBuf.readInt();
         int imeLength = byteBuf.readInt();
         int bodyLength = byteBuf.readInt();
 
         // Handle sticky packet/unpacking issues
-        if(byteBuf.readableBytes() < bodyLength + imeLength){
+        if (byteBuf.readableBytes() < pwdLength + bodyLength + imeLength) {
             byteBuf.resetReaderIndex();
             return;
         }
+
+        // Got password
+        byte[] pwdBytes = new byte[pwdLength];
+        byteBuf.readBytes(pwdBytes);
+        String encryptedPassword = new String(pwdBytes);
+        // Compare encryptedPassword with the password in the database for authentication
 
         // Got ime data
         byte[] imeBytes = new byte[imeLength];
@@ -59,7 +77,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
         message.setMessageHeader(messageHeader);
 
         // If the message type sent by the client is JSON
-        if(messageType == 0x0){
+        if (messageType == 0x0) {
             String bodyData = new String(bodyBytes);
             JSONObject body = (JSONObject) JSONObject.parse(bodyData);
             message.setMessagePack(body);
@@ -67,5 +85,34 @@ public class MessageDecoder extends ByteToMessageDecoder {
 
         byteBuf.markReaderIndex();
         list.add(message);
+    }
+
+    // Helper method to convert bytes to hex string
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder result = new StringBuilder();
+        for (byte b : bytes) {
+            result.append(String.format("%02X", b));
+        }
+        return result.toString();
+    }
+
+    private String getDecryptedPassword(byte[] pwdBytes) {
+        // Create AES key from secret key
+        Key key = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "AES");
+
+        // Decrypt the password
+        byte[] decryptedBytes = new byte[0];
+        try {
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            decryptedBytes = cipher.doFinal(pwdBytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String decryptedPassword = new String(decryptedBytes, StandardCharsets.UTF_8);
+        System.out.println("Decrypted Password: " + decryptedPassword);
+
+        return decryptedPassword;
     }
 }

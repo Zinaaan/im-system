@@ -2,10 +2,16 @@ package com.zinan.im.tcp;
 
 import com.alibaba.fastjson.JSONObject;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -35,6 +41,9 @@ public class TcpClient {
         byte[] imeiBytes = imei.getBytes(StandardCharsets.UTF_8);
         int imeiLength = imeiBytes.length;
         byte[] imeiLengthByte = intToBytes(imeiLength, 4);
+        byte[] password = encrypt().getBytes(StandardCharsets.UTF_8);
+        int pwdLength = password.length;
+        byte[] pwdLengthByte = intToBytes(pwdLength, 4);
 
         // Construct the JSON data
         Map<String, Object> data = new HashMap<>();
@@ -49,7 +58,7 @@ public class TcpClient {
 
         // Create the byte array for the request
         return concatArrays(commandByte, versionByte, clientTypeByte,
-                messageTypeByte, appIdByte, imeiLengthByte, bodyLenBytes, imeiBytes, body);
+                messageTypeByte, appIdByte, pwdLengthByte, imeiLengthByte, bodyLenBytes, password, imeiBytes, body);
     }
 
     public static byte[] intToBytes(int value, int length) {
@@ -97,6 +106,57 @@ public class TcpClient {
             // Close the socket
             socket.close();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String encrypt() {
+        String secretKey = "abcdeabcdeabcdea"; // 128-bit key
+        String plainPassword = "mysecretpassword";
+
+        // Create AES key from secret key
+        Key key = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "AES");
+
+        // Encrypt the password
+        byte[] encryptedBytes = new byte[0];
+        try {
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            encryptedBytes = cipher.doFinal(plainPassword.getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Encode encrypted password as base64
+        String pwd = Base64.getEncoder().encodeToString(encryptedBytes);
+        System.out.println("encrypt password: " + pwd);
+
+        return pwd;
+    }
+
+    public static String decrypt(String secretKey, String encryptedText) throws Exception {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedText);
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+        return new String(decryptedBytes);
+    }
+
+    public static void generateSecretKey() {
+        try {
+            // Generate a 256-bit random key
+            SecureRandom secureRandom = SecureRandom.getInstanceStrong();
+            byte[] key = new byte[32]; // 256 bits
+            secureRandom.nextBytes(key);
+
+            // Print the key as a hexadecimal string
+            StringBuilder keyHex = new StringBuilder();
+            for (byte b : key) {
+                keyHex.append(String.format("%02x", b));
+            }
+            System.out.println("Generated Key: " + keyHex.toString());
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
