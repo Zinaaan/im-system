@@ -6,6 +6,8 @@ import com.zinan.im.codec.protocols.MessageHeader;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.ssl.SslHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -23,9 +25,20 @@ import java.util.List;
  * @date 2023/06/21 16:06
  * @description Customized message decoder
  */
+@Slf4j
 public class MessageDecoder extends ByteToMessageDecoder {
 
-    String secretKey = "abcdeabcdeabcdea"; // 128-bit key
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        log.info("Client connected: " + ctx.channel().remoteAddress());
+        log.info("Client connected: " + ctx.channel().pipeline());
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        log.error("Exception caught: " + cause.getMessage());
+        ctx.close();
+    }
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
@@ -85,34 +98,5 @@ public class MessageDecoder extends ByteToMessageDecoder {
 
         byteBuf.markReaderIndex();
         list.add(message);
-    }
-
-    // Helper method to convert bytes to hex string
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder result = new StringBuilder();
-        for (byte b : bytes) {
-            result.append(String.format("%02X", b));
-        }
-        return result.toString();
-    }
-
-    private String getDecryptedPassword(byte[] pwdBytes) {
-        // Create AES key from secret key
-        Key key = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "AES");
-
-        // Decrypt the password
-        byte[] decryptedBytes = new byte[0];
-        try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, key);
-            decryptedBytes = cipher.doFinal(pwdBytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        String decryptedPassword = new String(decryptedBytes, StandardCharsets.UTF_8);
-        System.out.println("Decrypted Password: " + decryptedPassword);
-
-        return decryptedPassword;
     }
 }

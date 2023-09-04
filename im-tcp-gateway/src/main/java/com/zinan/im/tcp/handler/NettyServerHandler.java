@@ -12,6 +12,10 @@ import com.zinan.im.common.model.UserClientDto;
 import com.zinan.im.common.model.UserSession;
 import com.zinan.im.tcp.redis.RedisManager;
 import com.zinan.im.tcp.utils.SessionSocketHolder;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -19,6 +23,8 @@ import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
+
+import java.nio.ByteBuffer;
 
 /**
  * @author lzn
@@ -28,6 +34,12 @@ import org.redisson.api.RedissonClient;
 @Slf4j
 public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
 
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        log.info("Client disconnected: " + ctx.channel().remoteAddress());
+        log.info("Client disconnected: " + ctx.channel().pipeline());
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext context, Message message) throws Exception {
@@ -74,5 +86,33 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
         }
 
         System.out.println(message);
+
+        final WriteListener listener = new WriteListener() {
+            @Override
+            public void messageRespond(boolean success) {
+                System.out.println(success ? "reply success" : "reply fail");
+            }
+        };
+
+        ByteBuf responseBuffer = Unpooled.copiedBuffer((message.toString()).getBytes());
+
+        context.writeAndFlush(responseBuffer).addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (listener != null) {
+                    listener.messageRespond(future.isSuccess());
+                }
+            }
+
+        });
+
+        System.out.println("----------------------");
+    }
+
+    /**
+     * {@link WriteListener} is the lister message status interface.
+     */
+    public interface WriteListener {
+        void messageRespond(boolean success);
     }
 }

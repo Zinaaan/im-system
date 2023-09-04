@@ -1,12 +1,15 @@
 package com.zinan.im.tcp;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -83,29 +86,77 @@ public class TcpClient {
         return result;
     }
 
+//    public static void main(String[] args) {
+//        // Replace with the server's address
+//        String serverAddress = "localhost";
+//        // Replace with the server's port
+//        int serverPort = 9000;
+//
+//        try {
+//            // Connect to the server
+//            Socket socket = new Socket(serverAddress, serverPort);
+//
+//            // Get the output stream of the socket
+//            OutputStream outputStream = socket.getOutputStream();
+//
+//            // Construct your request data as a byte array
+//            byte[] requestData = generateBytesData(); // Your request data
+//
+//            // Send the request data to the server
+//            outputStream.write(requestData);
+//            outputStream.flush();
+//
+//            // Close the socket
+//            socket.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     public static void main(String[] args) {
-        // Replace with the server's address
+        // Replace with the server's address and port
         String serverAddress = "localhost";
-        // Replace with the server's port
         int serverPort = 9000;
 
         try {
             // Connect to the server
-            Socket socket = new Socket(serverAddress, serverPort);
-
-            // Get the output stream of the socket
-            OutputStream outputStream = socket.getOutputStream();
+            SocketChannel socketChannel = SocketChannel.open();
+            socketChannel.connect(new InetSocketAddress(serverAddress, serverPort));
 
             // Construct your request data as a byte array
             byte[] requestData = generateBytesData(); // Your request data
 
-            // Send the request data to the server
-            outputStream.write(requestData);
-            outputStream.flush();
+
+            // Read response asynchronously
+            while (true) {
+                // Send the request data to the server
+                ByteBuffer buffer = ByteBuffer.wrap(requestData);
+                while (buffer.hasRemaining()) {
+                    socketChannel.write(buffer);
+                }
+
+                // Create a buffer to receive data
+                ByteBuffer responseBuffer = ByteBuffer.allocate(1024); // Adjust buffer size as needed
+                responseBuffer.clear();
+                int bytesRead = socketChannel.read(responseBuffer);
+                if (bytesRead == -1) {
+                    break; // No more data
+                }
+
+                // Process the received data
+                responseBuffer.flip();
+                byte[] responseData = new byte[responseBuffer.remaining()];
+                responseBuffer.get(responseData);
+
+                String response = new String(responseData);
+                System.out.println("Received response: " + response);
+                System.out.println("----------------------");
+                Thread.sleep(1000);
+            }
 
             // Close the socket
-            socket.close();
-        } catch (IOException e) {
+//            socketChannel.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
