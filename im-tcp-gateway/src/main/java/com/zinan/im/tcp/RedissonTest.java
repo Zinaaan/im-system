@@ -1,5 +1,6 @@
 package com.zinan.im.tcp;
 
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RBucket;
 import org.redisson.api.RMap;
@@ -14,6 +15,7 @@ import org.redisson.config.Config;
  * @date 2023/07/04 15:25
  * @description
  */
+@Slf4j
 public class RedissonTest {
 
     public static void main(String[] args) {
@@ -24,23 +26,23 @@ public class RedissonTest {
         RedissonClient redissonClient = Redisson.create(config);
         // String
 //        RBucket<Object> im = redissonClient.getBucket("im");
-//        System.out.println(im.get());
+//        log.info(im.get());
 //        im.set("im");
-//        System.out.println(im.get());
+//        log.info(im.get());
 
         // Hash table
 //        RMap<String, String> imMap = redissonClient.getMap("imMap");
 //        String client = imMap.get("client");
-//        System.out.println(client);
+//        log.info(client);
 //        imMap.put("client", "webClient");
-//        System.out.println(imMap.get("client"));
+//        log.info(imMap.get("client"));
 
         // Pub-sub
         RTopic topic = redissonClient.getTopic("topic");
-        topic.addListener(String.class, (charSequence, s) -> System.out.println("Message received for client1: " + s));
+        topic.addListener(String.class, (charSequence, s) -> log.info("Message received for client1: " + s));
 
         RTopic topic2 = redissonClient.getTopic("topic");
-        topic2.addListener(String.class, (charSequence, s) -> System.out.println("Message received for client2: " + s));
+        topic2.addListener(String.class, (charSequence, s) -> log.info("Message received for client2: " + s));
 
         RTopic topic3 = redissonClient.getTopic("topic");
         topic3.publish("hello~client2");

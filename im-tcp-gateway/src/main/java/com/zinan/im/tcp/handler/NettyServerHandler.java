@@ -10,21 +10,16 @@ import com.zinan.im.common.enums.ImConnectStatusEnum;
 import com.zinan.im.common.enums.command.SystemCommand;
 import com.zinan.im.common.model.UserClientDto;
 import com.zinan.im.common.model.UserSession;
-import com.zinan.im.tcp.redis.RedisManager;
+import com.zinan.im.tcp.redis.RedisSessionOperator;
 import com.zinan.im.tcp.utils.SessionSocketHolder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RMap;
-import org.redisson.api.RedissonClient;
-
-import java.nio.ByteBuffer;
 
 /**
  * @author lzn
@@ -42,11 +37,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext context, Message message) throws Exception {
+    protected void channelRead0(ChannelHandlerContext context, Message message) {
 
         // Got request type
         Integer command = message.getMessageHeader().getCommand();
-
+        NioSocketChannel socketChannel = (NioSocketChannel) context.channel();
         // Log in
         if (SystemCommand.LOGIN.getCommand() == command) {
 
@@ -66,53 +61,33 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
             userSession.setUserId(userId);
             userSession.setClientType(clientType);
             userSession.setConnectionState(ImConnectStatusEnum.ONLINE_STATUS.getCode());
-            RedissonClient redissonClient = RedisManager.getRedissonClient();
-            // User session, format -> appId + USER_SESSION_CONSTANTS + userId
-            RMap<String, String> map = redissonClient.getMap(appId + Constants.RedisConstants.USER_SESSION_CONSTANTS + userId);
-            map.put(String.valueOf(message.getMessageHeader().getClientType()), JSONObject.toJSONString(userSession));
+            UserClientDto client = SessionSocketHolder.createClient(socketChannel);
+            RedisSessionOperator.getInstance().putClientTypeAndSession(client, JSONObject.toJSONString(userSession));
 
-            // Store user login session locally
-            UserClientDto userClientDto = new UserClientDto(userId, appId, clientType);
-            SessionSocketHolder.put(userClientDto, (NioSocketChannel) context.channel());
+            // Store session and channel in memory
+            SessionSocketHolder.put(client, (NioSocketChannel) context.channel());
         }
         // Log out
         else if (SystemCommand.LOGOUT.getCommand() == command) {
             // Remove local session and redis session
-            SessionSocketHolder.removeUserSession((NioSocketChannel) context.channel());
+            SessionSocketHolder.removeUserByChannel(socketChannel);
+            socketChannel.close();
         }
         // Heart beat
         else if (SystemCommand.PING.getCommand() == command) {
             context.channel().attr(AttributeKey.valueOf(Constants.READ_TIME)).set(System.currentTimeMillis());
         }
 
-        System.out.println(message);
+        log.info("Incoming message: {}", message);
 
-        final WriteListener listener = new WriteListener() {
-            @Override
-            public void messageRespond(boolean success) {
-                System.out.println(success ? "reply success" : "reply fail");
-            }
-        };
+        // TODO Deal with the incoming message
 
+        // Send response to the given client
         ByteBuf responseBuffer = Unpooled.copiedBuffer((message.toString()).getBytes());
 
-        context.writeAndFlush(responseBuffer).addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                if (listener != null) {
-                    listener.messageRespond(future.isSuccess());
-                }
-            }
+        context.writeAndFlush(responseBuffer).addListener(
+                (ChannelFutureListener) future -> log.info("Send message to client: {}", future.isSuccess()));
 
-        });
-
-        System.out.println("----------------------");
-    }
-
-    /**
-     * {@link WriteListener} is the lister message status interface.
-     */
-    public interface WriteListener {
-        void messageRespond(boolean success);
+        log.info("----------------------");
     }
 }

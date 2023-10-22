@@ -43,7 +43,7 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
 
                 if (lastReadTime != null && now - lastReadTime > heartBeatTime) {
                     // Switch the user status to "Offline"(Log out to the background)
-                    SessionSocketHolder.offlineUserSession((NioSocketChannel) ctx.channel());
+                    SessionSocketHolder.offlineUserByChannel((NioSocketChannel) ctx.channel());
                 }
             }
         }

@@ -1,13 +1,11 @@
 package com.zinan.im.tcp;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.*;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
@@ -18,12 +16,14 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author lzn
  * @date 2023/06/21 14:14
  * @description Tcp Client to test the interaction with Netty tcp server
  */
+@Slf4j
 public class TcpClient {
 
     public static byte[] generateBytesData() {
@@ -149,9 +149,9 @@ public class TcpClient {
                 responseBuffer.get(responseData);
 
                 String response = new String(responseData);
-                System.out.println("Received response: " + response);
-                System.out.println("----------------------");
-                Thread.sleep(1000);
+                log.info("Received response: " + response);
+                log.info("----------------------");
+                TimeUnit.SECONDS.sleep(1000);
             }
 
             // Close the socket
@@ -180,35 +180,8 @@ public class TcpClient {
 
         // Encode encrypted password as base64
         String pwd = Base64.getEncoder().encodeToString(encryptedBytes);
-        System.out.println("encrypt password: " + pwd);
+        log.info("encrypt password: " + pwd);
 
         return pwd;
-    }
-
-    public static String decrypt(String secretKey, String encryptedText) throws Exception {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
-        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedText);
-        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
-        return new String(decryptedBytes);
-    }
-
-    public static void generateSecretKey() {
-        try {
-            // Generate a 256-bit random key
-            SecureRandom secureRandom = SecureRandom.getInstanceStrong();
-            byte[] key = new byte[32]; // 256 bits
-            secureRandom.nextBytes(key);
-
-            // Print the key as a hexadecimal string
-            StringBuilder keyHex = new StringBuilder();
-            for (byte b : key) {
-                keyHex.append(String.format("%02x", b));
-            }
-            System.out.println("Generated Key: " + keyHex.toString());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
     }
 }

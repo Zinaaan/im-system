@@ -18,6 +18,9 @@ public class RedisManager {
     }
 
     public static RedissonClient getRedissonClient() {
+        if(redissonClient == null){
+            throw new RuntimeException("redissonClient not initialized yet");
+        }
         return redissonClient;
     }
 }
