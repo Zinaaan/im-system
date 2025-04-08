@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.zinan'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Redisson
+    implementation "org.redisson:redisson:${redissonVersion}"
+
+    // RabbitMQ
+    implementation "com.rabbitmq:amqp-client:${rabbitClientVersion}"
+
+    implementation project(':im-common')
+    implementation project(':im-codec')
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
