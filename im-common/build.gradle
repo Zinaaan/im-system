@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.0' // Adjust the version as needed
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+group = 'com.zinan'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Boot Starter with exclusion of logging
+    implementation('org.springframework.boot:spring-boot-starter') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+
+    // Apache HTTP Client
+    implementation "org.apache.httpcomponents:httpclient:${apacheHttpClientVersion}"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}

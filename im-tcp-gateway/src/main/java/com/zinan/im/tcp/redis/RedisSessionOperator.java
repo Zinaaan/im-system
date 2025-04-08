@@ -8,7 +8,7 @@ import org.redisson.api.RedissonClient;
 /**
  * @author lzn
  * @date 2023/10/22 15:17
- * @description Session operation of Redis
+ * Session operation of Redis
  */
 public class RedisSessionOperator {
     private static final RedisSessionOperator INSTANCE = new RedisSessionOperator();

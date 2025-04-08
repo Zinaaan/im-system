@@ -18,7 +18,7 @@ import java.util.Collection;
 public interface ImGroupMapper extends BaseMapper<ImGroupEntity> {
 
     /**
-     * @description 获取加入的群的最大seq
+     * 获取加入的群的最大seq
      * @return java.lang.Long
      */
     @Select(" <script> " +

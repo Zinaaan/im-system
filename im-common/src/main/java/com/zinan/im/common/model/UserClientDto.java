@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 /**
  * @author lzn
  * @date 2023/07/04 17:15
- * @description User client entity
+ * User client entity
  */
 @Data
 @NoArgsConstructor

@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author lzn
  * @date 2023/06/21 16:28
- * @description Netty server for handling mutual communication and multi-ended login
+ * Netty server for handling mutual communication and multi-ended login
  */
 @Slf4j
 public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {

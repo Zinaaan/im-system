@@ -20,7 +20,6 @@ import java.util.Set;
 /**
  * @author lzn
  * @date 2023/05/30 20:51
- * @description
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {

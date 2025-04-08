@@ -13,7 +13,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * @author lzn
  * @date 2023/07/11 21:54
- * @description RabbitMq factory
+ * RabbitMq factory
  */
 public class MqFactory {
 

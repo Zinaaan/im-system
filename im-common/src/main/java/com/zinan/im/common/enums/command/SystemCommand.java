@@ -3,7 +3,7 @@ package com.zinan.im.common.enums.command;
 /**
  * @author lzn
  * @date 2023/07/04 14:03
- * @description System command for login, generally use hexadecimal instead of decimal
+ * System command for login, generally use hexadecimal instead of decimal
  */
 public enum SystemCommand {
 

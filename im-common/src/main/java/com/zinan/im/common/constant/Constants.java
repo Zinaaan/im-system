@@ -3,7 +3,7 @@ package com.zinan.im.common.constant;
 /**
  * @author lzn
  * @date 2023/07/04 16:08
- * @description Constant pool for im-system
+ * Constant pool for im-system
  */
 public class Constants {
 

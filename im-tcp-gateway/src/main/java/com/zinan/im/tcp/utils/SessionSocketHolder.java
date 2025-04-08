@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author lzn
  * @date 2023/07/04 14:08
- * @description Session holder for the login users
+ * Session holder for the login users
  */
 public class SessionSocketHolder {
 

@@ -16,9 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * TCP server for IM system
+ *
  * @author lzn
  * @date 2023/06/21 14:15
- * @description
  */
 public class LimServer {
 
@@ -59,7 +60,7 @@ public class LimServer {
                         }
                     });
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error on starting tcp server", e);
         }
     }
 

@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * @author lzn
  * @date 2023/07/11 22:05
- * @description Message receiver for Rabbit mq
+ * Message receiver for Rabbit mq
  */
 @Slf4j
 public class MessageReceiver {

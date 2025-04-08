@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author lzn
  * @date 2023/07/05 21:23
- * @description Netty server for handling heart beat events
+ * Netty server for handling heart beat events
  * e.g. If someone logged out from the system to the background(not actually log out), this handler will handle this events
  */
 @Slf4j

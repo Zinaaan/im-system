@@ -7,9 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * Generating success and failed response
+ *
  * @author lzn
  * @date 2023/05/30 16:27
- * @description
  */
 @Data
 @Builder

@@ -1,11 +1,7 @@
 package com.zinan.im.tcp;
 
 import com.zinan.im.codec.config.BootstrapConfig;
-import com.zinan.im.tcp.receiver.MessageReceiver;
-import com.zinan.im.tcp.redis.RedisManager;
 import com.zinan.im.tcp.server.LimServer;
-import com.zinan.im.tcp.server.LimWebsocketServer;
-import com.zinan.im.tcp.utils.MqFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -15,8 +11,7 @@ import java.io.InputStream;
 /**
  * @author lzn
  * @date 2023/06/21 14:14
- * @description Starter for tcp gateway
- * <p>
+ * Starter for tcp gateway
  * Extract the common configuration to the config.yml, and analysis it and start the tcp service
  */
 public class Starter {

@@ -13,13 +13,15 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Websocket server for IM system
+ *
  * @author lzn
  * @date 2023/06/21 14:29
- * @description
  */
 public class LimWebsocketServer {
 
@@ -35,34 +37,38 @@ public class LimWebsocketServer {
         EventLoopGroup workGroup = new NioEventLoopGroup(tcpConfig.getWorkThreadSize());
 
         bootstrap = new ServerBootstrap();
-        bootstrap.group(bossGroup, workGroup)
-                .channel(NioServerSocketChannel.class)
-                // The available queue size
-                .option(ChannelOption.SO_BACKLOG, 10240)
-                // true -> available for reuse local address and port
-                .option(ChannelOption.SO_REUSEADDR, true)
-                // true -> forbidden Nagle algorithm. Affects the real-time nature of messages if false
-                .option(ChannelOption.TCP_NODELAY, true)
-                // true -> The server will send heartbeats packages if there is no data for 2 hours
-                .option(ChannelOption.SO_KEEPALIVE, true)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        ChannelPipeline pipeline = socketChannel.pipeline();
-                        // Support Http codec since the Websocket protocol is based on Http protocol
-                        pipeline.addLast("http-codec", new HttpServerCodec());
-                        // Support for chunked data
-                        pipeline.addLast("http-chunked", new ChunkedWriteHandler());
-                        pipeline.addLast("aggregator", new HttpObjectAggregator(65535));
-                        /*
-                            Websocket server for handling agreements, specify the router for the client connection -> /ws
-                            This handler will do some complicated things like handshaking(close, ping, pong) ping + pong = 心跳
+        try {
+            bootstrap.group(bossGroup, workGroup)
+                    .channel(NioServerSocketChannel.class)
+                    // The available queue size
+                    .option(ChannelOption.SO_BACKLOG, 10240)
+                    // true -> available for reuse local address and port
+                    .option(ChannelOption.SO_REUSEADDR, true)
+                    // true -> forbidden Nagle algorithm. Affects the real-time nature of messages if false
+                    .option(ChannelOption.TCP_NODELAY, true)
+                    // true -> The server will send heartbeats packages if there is no data for 2 hours
+                    .option(ChannelOption.SO_KEEPALIVE, true)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            ChannelPipeline pipeline = socketChannel.pipeline();
+                            // Support Http codec since the Websocket protocol is based on Http protocol
+                            pipeline.addLast("http-codec", new HttpServerCodec());
+                            // Support for chunked data
+                            pipeline.addLast("http-chunked", new ChunkedWriteHandler());
+                            pipeline.addLast("aggregator", new HttpObjectAggregator(65535));
+                            /*
+                                Websocket server for handling agreements, specify the router for the client connection -> /ws
+                                This handler will do some complicated things like handshaking(close, ping, pong) ping + pong = 心跳
 
-                            Websocket's transmission via <b>frame</b> depends on vary data types
-                         */
-                        pipeline.addLast(new WebSocketServerProtocolHandler("/ws"));
-                    }
-                });
+                                Websocket's transmission via <b>frame</b> depends on vary data types
+                             */
+                            pipeline.addLast(new WebSocketServerProtocolHandler("/ws"));
+                        }
+                    });
+        } catch (Exception e) {
+            log.error("Error on starting websocket server", ExceptionUtils.getRootCause(e));
+        }
     }
 
     public void start() {

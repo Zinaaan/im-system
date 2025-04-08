@@ -6,42 +6,33 @@ import com.zinan.im.codec.protocols.MessageHeader;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.handler.ssl.SslHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
+ * Customized message decoder
+ *
  * @author lzn
  * @date 2023/06/21 16:06
- * @description Customized message decoder
  */
 @Slf4j
 public class MessageDecoder extends ByteToMessageDecoder {
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.info("Client connected: " + ctx.channel().remoteAddress());
-        log.info("Client connected: " + ctx.channel().pipeline());
+    public void channelActive(ChannelHandlerContext ctx) {
+        log.info("Client connected: {}", ctx.channel().remoteAddress());
+        log.info("Client connected: {}", ctx.channel().pipeline());
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error("Exception caught: " + cause.getMessage());
+        log.error("Exception caught: {}", cause.getMessage());
         ctx.close();
     }
 
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
+    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
 
         if (byteBuf.readableBytes() < 28) {
             return;
@@ -66,7 +57,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
         // Got password
         byte[] pwdBytes = new byte[pwdLength];
         byteBuf.readBytes(pwdBytes);
-        String encryptedPassword = new String(pwdBytes);
+//        String encryptedPassword = new String(pwdBytes);
         // Compare encryptedPassword with the password in the database for authentication
 
         // Got ime data

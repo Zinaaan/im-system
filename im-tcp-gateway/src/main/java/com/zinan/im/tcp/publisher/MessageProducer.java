@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author lzn
  * @date 2023/07/11 22:01
- * @description Message producer for Rabbit Mq
+ * Message producer for Rabbit Mq
  */
 @Slf4j
 public class MessageProducer {

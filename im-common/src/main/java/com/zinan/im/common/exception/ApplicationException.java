@@ -1,10 +1,13 @@
 package com.zinan.im.common.exception;
 
+import lombok.Getter;
+
 /**
  * @author lzn
  * @date 2023/05/30 16:11
  * @description
  */
+@Getter
 public class ApplicationException extends RuntimeException {
 
     private final int code;
@@ -21,14 +24,6 @@ public class ApplicationException extends RuntimeException {
         super(exceptionsInterface.getError());
         this.code = exceptionsInterface.getCode();
         this.error = exceptionsInterface.getError();
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getError() {
-        return error;
     }
 
     /**

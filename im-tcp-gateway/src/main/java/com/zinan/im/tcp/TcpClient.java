@@ -10,8 +10,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author lzn
  * @date 2023/06/21 14:14
- * @description Tcp Client to test the interaction with Netty tcp server
+ * Tcp Client to test the interaction with Netty tcp server
  */
 @Slf4j
 public class TcpClient {

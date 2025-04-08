@@ -1,0 +1,111 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+group = 'com.zinan'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+ext {
+    mybatisPlusVersion = '3.4.2'
+    hutoolVersion = '5.8.24'
+    redissonVersion = '3.22.0'
+    snakeyamlVersion = '2.0'
+    protostuffApiVersion = '1.0.10'
+    zkClientVersion = '0.1'
+    apacheHttpClientVersion = '4.5.13'
+    rabbitClientVersion = '5.18.0'
+    apacheCommonsVersion = '3.12.0'
+    fastjsonVersion = '2.0.57'
+    springbootVersion = '2.7.0'
+    nettyVersion = '4.1.94.Final'
+    feignVersion = '8.18.0'
+    hibernateValidatorVersion = '5.4.3.Final'
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    configurations.all {
+        exclude group: 'javax.jms', module: 'jms'
+        exclude group: 'com.sun.jdmk', module: 'jmxtools'
+        exclude group: 'com.sun.jmx', module: 'jmxri'
+    }
+
+    dependencies {
+        // FastJSON
+        implementation "com.alibaba:fastjson:${fastjsonVersion}"
+
+        // Lombok
+        compileOnly 'org.projectlombok:lombok:1.18.28'
+        annotationProcessor 'org.projectlombok:lombok:1.18.28'
+
+        // Protostuff dependencies
+        implementation "com.dyuproject.protostuff:protostuff-api:${protostuffApiVersion}"
+        implementation "com.dyuproject.protostuff:protostuff-core:${protostuffApiVersion}"
+        implementation "com.dyuproject.protostuff:protostuff-runtime:${protostuffApiVersion}"
+
+        // Apache Commons
+        implementation "org.apache.commons:commons-lang3:${apacheCommonsVersion}"
+
+        // Redis
+        implementation "org.springframework.boot:spring-boot-starter-data-redis:${springbootVersion}"
+
+        // RabbitMQ
+        implementation "org.springframework.boot:spring-boot-starter-amqp:${springbootVersion}"
+        implementation "com.rabbitmq:amqp-client:${rabbitClientVersion}"
+
+        // MyBatis Plus
+        implementation "com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}"
+
+        // Hibernate Validator
+        implementation "org.hibernate:hibernate-validator:${hibernateValidatorVersion}"
+
+        // Redisson
+        implementation "org.redisson:redisson:${redissonVersion}"
+
+        // SnakeYAML
+        implementation "org.yaml:snakeyaml:${snakeyamlVersion}"
+
+        // Hutool
+        implementation "cn.hutool:hutool-all:${hutoolVersion}"
+
+        // ZkClient
+        implementation "com.github.sgroschupf:zkclient:${zkClientVersion}"
+
+        // Netty
+        implementation "io.netty:netty-all:${nettyVersion}"
+
+        // Feign
+        implementation "com.netflix.feign:feign-core:${feignVersion}"
+        implementation "com.netflix.feign:feign-jackson:${feignVersion}"
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
+    bootJar {
+        enabled = false
+    }
+
+    jar {
+        enabled = true
+    }
+}

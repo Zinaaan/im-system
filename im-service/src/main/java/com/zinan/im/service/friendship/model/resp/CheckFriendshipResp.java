@@ -6,7 +6,7 @@ import lombok.Data;
 /**
  * @author lzn
  * @date 2023/05/31 19:03
- * @description Verify the friendship for two person according to `status`
+ * Verify the friendship for two person according to `status`
  * <p>
  * Friendship verification
  * **One-way verification**

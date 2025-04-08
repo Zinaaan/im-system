@@ -6,9 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * Configuration mapping for config.xml resources
+ *
  * @author lzn
  * @date 2023/06/21 14:56
- * @description Configuration mapping for config.xml in im-tcp-gateway/resources
  */
 @Data
 public class BootstrapConfig {

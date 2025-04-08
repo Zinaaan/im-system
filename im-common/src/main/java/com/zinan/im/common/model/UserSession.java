@@ -5,7 +5,7 @@ import lombok.Data;
 /**
  * @author lzn
  * @date 2023/07/04 15:47
- * @description User session entity
+ * User session entity
  */
 @Data
 public class UserSession {
