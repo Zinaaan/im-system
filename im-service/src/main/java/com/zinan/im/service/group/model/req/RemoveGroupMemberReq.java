@@ -4,8 +4,8 @@ package com.zinan.im.service.group.model.req;
 import com.zinan.im.common.model.RequestBase;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 /**
  * @author lzn

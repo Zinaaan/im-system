@@ -1,7 +1,7 @@
 package com.zinan.im.common.model;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
-import javax.validation.constraints.NotEmpty;
 
 /**
  * @author lzn

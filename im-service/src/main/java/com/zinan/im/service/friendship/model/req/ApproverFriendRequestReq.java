@@ -3,7 +3,6 @@ package com.zinan.im.service.friendship.model.req;
 import com.zinan.im.common.model.RequestBase;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**

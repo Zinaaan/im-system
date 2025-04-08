@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.7.0'
+    id 'org.springframework.boot' version '3.1.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
@@ -27,7 +27,7 @@ ext {
     rabbitClientVersion = '5.18.0'
     apacheCommonsVersion = '3.12.0'
     fastjsonVersion = '2.0.57'
-    springbootVersion = '2.7.0'
+    springbootVersion = '3.1.0'
     nettyVersion = '4.1.94.Final'
     feignVersion = '8.18.0'
     hibernateValidatorVersion = '5.4.3.Final'
@@ -49,6 +49,8 @@ subprojects {
     dependencies {
         // FastJSON
         implementation "com.alibaba:fastjson:${fastjsonVersion}"
+
+        implementation "jakarta.validation:jakarta.validation-api:3.1.1"
 
         // Lombok
         compileOnly 'org.projectlombok:lombok:1.18.28'

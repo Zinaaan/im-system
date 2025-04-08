@@ -2,9 +2,9 @@ package com.zinan.im.service.group.model.req;
 
 
 import com.zinan.im.common.model.RequestBase;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 
 /**
  * @author lzn
