@@ -13,9 +13,8 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Websocket server for IM system
@@ -23,10 +22,8 @@ import org.slf4j.LoggerFactory;
  * @author lzn
  * @date 2023/06/21 14:29
  */
+@Slf4j
 public class LimWebsocketServer {
-
-    private static final Logger log = LoggerFactory.getLogger(LimWebsocketServer.class);
-
     private final BootstrapConfig.TcpConfig tcpConfig;
 
     private final ServerBootstrap bootstrap;

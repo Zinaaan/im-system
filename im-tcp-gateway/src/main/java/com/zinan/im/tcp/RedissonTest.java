@@ -39,10 +39,10 @@ public class RedissonTest {
 
         // Pub-sub
         RTopic topic = redissonClient.getTopic("topic");
-        topic.addListener(String.class, (charSequence, s) -> log.info("Message received for client1: " + s));
+        topic.addListener(String.class, (charSequence, s) -> log.info("Message received for client1: {}", s));
 
         RTopic topic2 = redissonClient.getTopic("topic");
-        topic2.addListener(String.class, (charSequence, s) -> log.info("Message received for client2: " + s));
+        topic2.addListener(String.class, (charSequence, s) -> log.info("Message received for client2: {}", s));
 
         RTopic topic3 = redissonClient.getTopic("topic");
         topic3.publish("hello~client2");

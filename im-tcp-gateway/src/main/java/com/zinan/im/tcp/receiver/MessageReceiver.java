@@ -29,7 +29,7 @@ public class MessageReceiver {
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
                     // Handle received message
                     String message = new String(body);
-                    log.info("handle received message:" + message);
+                    log.info("handle received message:{}", message);
                 }
             });
         } catch (Exception e) {

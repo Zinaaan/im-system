@@ -2,6 +2,7 @@ package com.zinan.im.tcp;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -147,7 +148,7 @@ public class TcpClient {
                 responseBuffer.get(responseData);
 
                 String response = new String(responseData);
-                log.info("Received response: " + response);
+                log.info("Received response: {}", response);
                 log.info("----------------------");
                 TimeUnit.SECONDS.sleep(1000);
             }
@@ -173,12 +174,12 @@ public class TcpClient {
             cipher.init(Cipher.ENCRYPT_MODE, key);
             encryptedBytes = cipher.doFinal(plainPassword.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error on encrypting the password", ExceptionUtils.getRootCause(e));
         }
 
         // Encode encrypted password as base64
         String pwd = Base64.getEncoder().encodeToString(encryptedBytes);
-        log.info("encrypt password: " + pwd);
+        log.info("encrypt password: {}", pwd);
 
         return pwd;
     }

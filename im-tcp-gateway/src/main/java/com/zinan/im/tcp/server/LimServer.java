@@ -12,8 +12,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * TCP server for IM system
@@ -21,10 +20,8 @@ import org.slf4j.LoggerFactory;
  * @author lzn
  * @date 2023/06/21 14:15
  */
+@Slf4j
 public class LimServer {
-
-    private static final Logger log = LoggerFactory.getLogger(LimServer.class);
-
     private final BootstrapConfig.TcpConfig tcpConfig;
 
     private final ServerBootstrap bootstrap;

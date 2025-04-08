@@ -61,7 +61,7 @@ public class ImUserServiceImpl implements ImUserService {
                     successIdList.add(e.getUserId());
                 }
             } catch (Exception ex) {
-                log.error("Error in importing user " + e.getUserId() + ": " + ex.getMessage());
+                log.error("Error in importing user {}: {}", e.getUserId(), ex.getMessage());
                 errorIdList.add(e.getUserId());
             }
         });
@@ -128,7 +128,7 @@ public class ImUserServiceImpl implements ImUserService {
                     errorIdList.add(userId);
                 }
             } catch (Exception e) {
-                log.error("Error in deleting user: " + e.getMessage());
+                log.error("Error in deleting user: {}", e.getMessage());
                 errorIdList.add(userId);
             }
         });

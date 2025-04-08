@@ -32,8 +32,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        log.info("Client disconnected: " + ctx.channel().remoteAddress());
-        log.info("Client disconnected: " + ctx.channel().pipeline());
+        log.info("Client disconnected: {}", ctx.channel().remoteAddress());
+        log.info("Client disconnected: {}", ctx.channel().pipeline());
     }
 
     @Override

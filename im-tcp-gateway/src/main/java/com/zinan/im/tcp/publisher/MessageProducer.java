@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.rabbitmq.client.Channel;
 import com.zinan.im.tcp.utils.MqFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * @author lzn
@@ -22,8 +23,7 @@ public class MessageProducer {
             channel = MqFactory.getChannel(channelName);
             channel.basicPublish(channelName, "", null, JSONObject.toJSONString(message).getBytes());
         } catch (Exception e) {
-            e.printStackTrace();
-            log.error("Send message error: {}", e.getMessage());
+            log.error("Send message error", ExceptionUtils.getRootCause(e));
         }
     }
 }
