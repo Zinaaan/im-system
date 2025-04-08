@@ -150,13 +150,13 @@ public class TcpClient {
                 String response = new String(responseData);
                 log.info("Received response: {}", response);
                 log.info("----------------------");
-                TimeUnit.SECONDS.sleep(1000);
+                TimeUnit.SECONDS.sleep(1);
             }
 
             // Close the socket
 //            socketChannel.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error on sending requests", ExceptionUtils.getRootCause(e));
         }
     }
 
