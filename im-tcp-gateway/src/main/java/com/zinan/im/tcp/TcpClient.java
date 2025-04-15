@@ -18,9 +18,10 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Tcp Client to test the interaction with Netty tcp server
+ *
  * @author lzn
  * @date 2023/06/21 14:14
- * Tcp Client to test the interaction with Netty tcp server
  */
 @Slf4j
 public class TcpClient {

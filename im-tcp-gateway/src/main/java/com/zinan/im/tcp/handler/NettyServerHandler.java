@@ -14,6 +14,7 @@ import com.zinan.im.tcp.redis.RedisSessionOperator;
 import com.zinan.im.tcp.utils.SessionSocketHolder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -51,9 +52,10 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
             String userId = loginPack.getUserId();
             Integer appId = message.getMessageHeader().getAppId();
             Integer clientType = message.getMessageHeader().getClientType();
-            context.channel().attr(AttributeKey.valueOf(Constants.USER_ID)).set(userId);
-            context.channel().attr(AttributeKey.valueOf(Constants.APP_ID)).set(appId);
-            context.channel().attr(AttributeKey.valueOf(Constants.CLIENT_TYPE)).set(clientType);
+            Channel channel = context.channel();
+            channel.attr(AttributeKey.valueOf(Constants.USER_ID)).set(userId);
+            channel.attr(AttributeKey.valueOf(Constants.APP_ID)).set(appId);
+            channel.attr(AttributeKey.valueOf(Constants.CLIENT_TYPE)).set(clientType);
 
             // Store the current channel via Redis -> Hash table
             UserSession userSession = new UserSession();
@@ -65,7 +67,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
             RedisSessionOperator.getInstance().putClientTypeAndSession(client, JSONObject.toJSONString(userSession));
 
             // Store session and channel in memory
-            SessionSocketHolder.put(client, (NioSocketChannel) context.channel());
+            SessionSocketHolder.put(client, (NioSocketChannel) channel);
         }
         // Log out
         else if (SystemCommand.LOGOUT.getCommand() == command) {

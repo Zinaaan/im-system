@@ -15,9 +15,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Session holder for the login users
+ *
  * @author lzn
  * @date 2023/07/04 14:08
- * Session holder for the login users
  */
 public class SessionSocketHolder {
 

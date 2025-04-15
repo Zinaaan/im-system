@@ -6,12 +6,14 @@ import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 
 /**
+ * Session operation of Redis
+ *
  * @author lzn
  * @date 2023/10/22 15:17
- * Session operation of Redis
  */
 public class RedisSessionOperator {
     private static final RedisSessionOperator INSTANCE = new RedisSessionOperator();
+    private static final ThreadLocal<StringBuilder> reusableKey = ThreadLocal.withInitial(StringBuilder::new);
 
     private RedisSessionOperator() {
     }
@@ -22,8 +24,10 @@ public class RedisSessionOperator {
 
     private final RedissonClient redissonClient = RedisManager.getRedissonClient();
 
-    public String createRedisMapKey(UserClientDto client) {
-        return client.getAppId() + Constants.RedisConstants.USER_SESSION_CONSTANTS + client.getUserId();
+    private String createRedisMapKey(UserClientDto client) {
+        StringBuilder redisMapKey = reusableKey.get();
+        redisMapKey.setLength(0);
+        return redisMapKey.append(client.getAppId()).append(Constants.RedisConstants.USER_SESSION_CONSTANTS).append(client.getUserId()).toString();
     }
 
     public <V> void putClientTypeAndSession(UserClientDto client, V session) {
